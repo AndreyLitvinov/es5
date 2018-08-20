@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+    <script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript">
+        function loadDoc(divid, url) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById(divid).innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", url, true);
+            xhttp.send();
+        }
+    </script>
+
+  
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark mb-5 justify-content-md-center">
+        <!--<a class="navbar-brand" href="#">Test</a>-->
+    </nav>
+
+    <main role="main" class="container">
+        <div class="jumbotron">
+            <div class="row justify-content-md-center">
+                <h1>Тест в процессе/не начат</h1>
+            </div>
+            <!--<div id="demo" class="row">
+        <button type="button"  class="btn btn-lg btn-primary" onclick="loadDoc('demo', 'http://localhost:8888/api/tests')">Change Content</button>
+    </div>-->
+            <div class="row justify-content-md-center">
+                <div class="col-md-auto">
+                    <button type="button" class="mx-auto btn btn-lg btn-primary" onclick="loadDoc('config', 'serviceconfig/')">Начать тест</button>
+                </div>
+            </div>
+            <!--<div id="config" class="row">
+                <button type="button" class="btn btn-lg btn-primary" onclick="loadDoc('config', 'serviceconfig/')">Начать тест</button>
+            </div>-->
+        </div>
+    </main>
+</body>
+</html>
