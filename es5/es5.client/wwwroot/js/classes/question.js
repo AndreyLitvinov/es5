@@ -10,7 +10,6 @@
  */
 function Question(answers
     , options
-    , score
     , text) {
 
     // public
@@ -19,23 +18,34 @@ function Question(answers
 
     // privarte
     var answers = answers;
-    var score = score;
+    var score = 0;
     
     this.getScore = function () {
         return score;
         // пока не знаю что делжен возвращать
     };
 
-    this.handleNext = function () {
-        // пока не знаю что делжен возвращать
+    this.handleNext = function (result) {
+        // сравнить резльтат с ответами
+        if (Array.isArray(answers) && answers.length > 1)
+        {
+            if (!Array.isArray(result) || result.length != answers.length) return;
+
+            for (var i = 0; i < result.length; i++) {
+                if (answers.indexOf(result[i]) == -1) return;
+            }
+
+            // массивы совпадают по значениям
+            score += 2;
+            return;
+
+        } else {
+            // сравнить значения
+            if (result == answers[0])
+            {
+                score += 10;
+                return;
+            }
+        }
     };
 }
-
-/**
- * Get question text.
- * 
- * @return {String}
- */
-Question.prototype.toString = function () {
-    return this.text;
-};

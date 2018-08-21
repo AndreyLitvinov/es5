@@ -1,5 +1,8 @@
-﻿using es5.api.Models;
+﻿using es5.api.Infrastructure;
+using es5.api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +12,15 @@ namespace es5.Repository
 {
     public class QuestionsRepository: IQuestionsRepository
     {
-        private readonly TestContext context;
+        readonly TestContext context;
         string errorMessage = string.Empty;
+        ISession Session { get; set; }
 
-        public QuestionsRepository(TestContext context)
+        public QuestionsRepository(TestContext context, IServiceProvider services)
         {
             this.context = context;
+            Session = services.GetRequiredService<IHttpContextAccessor>()?
+              .HttpContext.Session;
         }
 
         /// <summary>
@@ -23,8 +29,19 @@ namespace es5.Repository
         /// <returns>count</returns>
         public int LoadQuestions()
         {
-            // нужно сохранять еще в сессию, и нужен выбор случайных
-            return context.Questions.AsQueryable().Count();
+            var random = new Random();
+            var allQuestionsCount = context
+                .Questions
+                .Count();
+
+            var questions = context
+                .Questions
+                .OrderBy(x => random.Next(allQuestionsCount))
+                .Take(random.Next(3, allQuestionsCount))
+                .ToList();
+
+            Session.SetJson("questions", questions);
+            return questions.Count;
         }
 
         /// <summary>
@@ -35,7 +52,7 @@ namespace es5.Repository
         public Question GetNext(int number)
         {
             // нужно брать из сессии
-            return context.Questions.Find(number);
+            return Session.GetJson<List<Question>>("questions")[number];
         }
     }
 }

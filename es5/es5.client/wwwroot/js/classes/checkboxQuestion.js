@@ -1,43 +1,56 @@
 ﻿'use strict';
 
-/**
- * СheckboxQuestion.
- * 
- * @constructor
- * @param {String} id - The id.
- * @param {Number} x  - The x coordinate.
- * @param {Number} y  - The y coordinate.
- */
-function CheckboxQuestion(answers
+function CheckboxQuestion(
+    answers
     , options
-    , score
     , text) {
     Question.call(this, answers
         , options
-        , score
         , text)
-    // пока дополнительных действий не нужно
+
+    var self = this;
+    var handleNext = function (callbackNext, callbackAdd) {
+        return function () {
+            var selector = document.querySelectorAll('#checkbox-question input[name="checkbox-question"]:checked');
+            if (selector) {
+                var results = [];
+                for (var i = 0; i < selector.length; i++) {
+                    results.push(selector[i].value);
+                }
+                self.handleNext(results);
+            }
+
+            if (callbackAdd) callbackAdd(self);
+            if (callbackNext) callbackNext();
+        }
+    };
+
+    function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+    }
+
+    this.init = function (container, button, callbackNext, callbackAdd) {
+
+        // тут видимо нужно заставить рисовать его
+        var html = '<form action="#n" id="checkbox-question">';
+        html += '<h6>' + this.text + '</h6>';
+        for (var i = 0; i < this.options.length; i++) {
+            html += `
+            <div class="row">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="defaultChecked`+ i + `"  name="checkbox-question"` + (i == 0 ? 'checked' : '') + ` value="` + b64EncodeUnicode(this.options[i]) +`">
+                  <label class="custom-control-label" for="defaultChecked`+ i + `">` + this.options[i] + `</label>
+                </div>
+            </div>`;
+        }
+        html += '</form>';
+        HtmlHelper.SetHtml(container, html);
+        $(button).on('click', handleNext(callbackNext, callbackAdd));
+    };
 }
 
-// наследование, ха нет смысла в этом
 CheckboxQuestion.prototype = Object.create(Question.prototype);
 CheckboxQuestion.prototype.constructor = Question;
-
-/**
- * Go to next.
- * 
- * @param {Number} - The x coordinate.
- * @param {Number} - The y coordinate.
- */
-CheckboxQuestion.prototype.handleNext = function () {
-    Question.prototype.handleNext.call(this);
-};
-
-/**
- * Render.
- * 
- * @return {Object}
- */
-CheckboxQuestion.prototype.init = function () {
-    // тут видимо нужно заставить рисовать его
-};

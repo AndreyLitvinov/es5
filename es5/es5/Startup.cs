@@ -16,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
 
 namespace es5
 {
@@ -32,6 +34,24 @@ namespace es5
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddTransient<IQuestionsRepository, QuestionsRepository>();
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+            });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(GetKeyRingDirInfo())
+                .SetApplicationName("SharedCookieApp");
+
+            services.ConfigureApplicationCookie(options => {
+                options.Cookie.Name = ".AspNet.SharedCookie";
+            });
 
             #region CROS
             // ********************
@@ -65,10 +85,8 @@ namespace es5
                 app.UseHsts();
             }
 
-           // app.UseHttpsRedirection();
+            app.UseSession();
             app.UseMvc();
-
-            
 
             #region CROS
             // ********************
@@ -76,6 +94,31 @@ namespace es5
             // ********************
             app.UseCors("SiteCorsPolicy");
             #endregion CROS
+        }
+
+        // For demonstration purposes only.
+        // This method searches up the directory tree until it
+        // finds the KeyRing folder in the sample. Using this
+        // approach allows the sample to run from a Debug
+        // or Release location within the bin folder.
+        private DirectoryInfo GetKeyRingDirInfo()
+        {
+            var startupAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var applicationBasePath = System.AppContext.BaseDirectory;
+            var directoryInfo = new DirectoryInfo(applicationBasePath);
+            do
+            {
+                directoryInfo = directoryInfo.Parent;
+
+                var keyRingDirectoryInfo = new DirectoryInfo(Path.Combine(directoryInfo.FullName, "KeyRing"));
+                if (keyRingDirectoryInfo.Exists)
+                {
+                    return keyRingDirectoryInfo;
+                }
+            }
+            while (directoryInfo.Parent != null);
+
+            throw new Exception($"KeyRing folder could not be located using the application root {applicationBasePath}.");
         }
     }
 }

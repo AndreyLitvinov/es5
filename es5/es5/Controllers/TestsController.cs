@@ -25,12 +25,13 @@ namespace es5.Controllers
         [HttpGet("/TestInit")]
         public ActionResult<int> TestInit()
         {
+            
             return questionsRepository.LoadQuestions();
         }
 
         // возможно тут нужна другая модель, 
         [EnableCors("SiteCorsPolicy")]
-        [HttpGet("{number}")]
+        [HttpGet("/GetNext/{number}")]
         public ActionResult<Question> GetNext(int number)
         {
             return questionsRepository.GetNext(number);
