@@ -1,5 +1,18 @@
 ﻿'use strict';
 
+export default class Question {
+    constructor() {
+    }
+
+    getScore() {
+        console.log('hello');
+    }
+
+    handleNext() {
+        console.log('handleNext');
+    }
+}
+/*
 function Question(answers
     , options
     , text) {
@@ -38,3 +51,4 @@ function Question(answers
         }
     };
 }
+*/

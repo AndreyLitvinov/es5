@@ -1,5 +1,101 @@
 ﻿'use strict';
 
+/*import Question from '../classes/question.js';
+import CheckboxQuestion from '../classes/checkboxQuestion.js';
+import RadioQuestion from '../classes/radioQuestion.js';*/
+import "whatwg-fetch";
+import { HtmlHelper, Base64Helper } from '../helpers/core';
+import { Promise } from "core-js";
+
+const privateMembers = new WeakMap();
+
+class TestController {
+    constructor() {
+        let privateProperties = {
+            questionCount: 0,
+            questionList: [],
+            questionIndex: -1,
+            serviceUrl: '',
+
+            currentQuestion: null,
+            selectorCurrentConteiner: '',
+            loadHtml: '<div class="row justify-content-md-center"><div class="loader"></div></div>',
+
+            ajaxToService: function (url) {
+                HtmlHelper.SetHtml(selectorCurrentConteiner, loadHtml);
+                return fetch(this.serviceUrl + url)
+            },
+
+            questionFactory: function (questionData) {
+                var answers = questionData.answers.split('#;')
+                    .map(function (x) { return x; });
+                var options = questionData.options.split('#;')
+                    .map(function (x) { return Base64Helper.decodeUnicode(x); });
+
+                // кнопки перезапустить и следующий/закончить
+                HtmlHelper.SetHtml(selectorCurrentConteiner, `
+                <div id='question-container'>
+                </div>                
+                <div class="row">
+                    <div class="col-sm text-right">
+                        <button id="test-controller-next" type="button" class="mx-auto btn btn-lg btn-primary">${(questionIndex == questionCount - 1 ? 'Закончить' : 'Следующий')}</button>
+                    </div>
+                </div>
+                <div class="row row justify-content-md-center">
+                    <div class="col-md-auto">
+                        <button id="test-controller-restart" type="button" class="mx-auto btn btn-lg btn-primary">Начать заново</button>
+                    </div>
+                </div>
+            `);
+
+                document.getElementById("test-controller-restart").onclick = startTest;
+
+                if (answers.length > 1) {
+                    var many = new CheckboxQuestion(answers
+                        , options
+                        , text);
+                    currentQuestion = many;
+                } else {
+                    var one = new RadioQuestion(answers
+                        , options
+                        , text);
+                    currentQuestion = one;
+                }
+            },
+            createNewQuestionObject: async function (index) {
+                const questionData = await this.ajaxToService('GetNext /' + index);
+                const question = this.questionFactory(questionData);
+                return question.init('#question-container', '#test-controller-next', createNextQuestionObject, addQuestionToList);
+            },
+            questionGenerator: async function* () {
+                const response = await this.ajaxToService('/TestInit');
+                for (var i = 0; i < response; i++) {
+                    yield this.createNewQuestionObject(questionData);
+                }
+            }
+        };
+        privateMembers.set(this, privateProperties)
+    }
+
+    init(urlService, selectorConteiner) {
+
+        privateMembers.get(this).serviceUrl = urlService;
+        privateMembers.get(this).selectorCurrentConteiner = selectorConteiner;
+
+        HtmlHelper.SetHtml(privateMembers.get(this).selectorCurrentConteiner, `
+                <div class="row justify-content-md-center">
+                    <div class="col-md-auto">
+                        <button id="test-controller-start" type="button" class="mx-auto btn btn-lg btn-primary">Начать тест</button>
+                    </div>
+                </div>
+            `);
+
+        document.getElementById("test-controller-start").onclick = privateMembers.get(this).startTest;
+    }
+}
+
+export { TestController }
+/*
 function TestController() {
 }
 
@@ -133,18 +229,7 @@ TestController.prototype = (function () {
         constructor: TestController,
 
         init: function (urlService, selectorConteiner) {
-            serviceUrl = urlService;
-            selectorCurrentConteiner = selectorConteiner;
-
-            HtmlHelper.SetHtml(selectorCurrentConteiner, `
-                <div class="row justify-content-md-center">
-                    <div class="col-md-auto">
-                        <button id="test-controller-start" type="button" class="mx-auto btn btn-lg btn-primary">Начать тест</button>
-                    </div>
-                </div>
-            `);
-
-            document.getElementById("test-controller-start").onclick = startTest;
+           
         },
     };;
-})();
+})();*/

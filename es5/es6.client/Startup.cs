@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace es5.client
+namespace es6.client
 {
     public class Startup
     {
@@ -25,6 +26,7 @@ namespace es5.client
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
+            services.AddNodeServices();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -48,8 +50,9 @@ namespace es5.client
             options.DefaultFileNames.Add("index.html");
 
             app.UseDefaultFiles(options);
+            app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions());
             app.UseStaticFiles();
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

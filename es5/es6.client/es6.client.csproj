@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="app\classes\checkboxQuestion.js" />
+    <Content Include="app\classes\question.js" />
+    <Content Include="app\classes\radioQuestion.js" />
+    <Content Include="app\controllers\testController.js" />
+    <Content Include="app\helpers\core.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\dist\" />
+  </ItemGroup>
+
+</Project>

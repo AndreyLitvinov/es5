@@ -1,5 +1,47 @@
 ﻿'use strict';
 
+import Question from "./question";
+import { HtmlHelper, Base64Helper } from "../helpers/core";
+
+export default class RadioQuestion extends Question {
+    constructor(answers
+        , options
+        , text) {
+        super(answers, options, text);
+    }
+
+    getScore() {
+        console.log('hello');
+    }
+
+    handleNext() {
+        console.log('handleNext');
+    }
+
+    init() {
+        var html = '<form action="#n" id="radio-question">';
+        html += `<h6>${this.text}</h6>`;
+        for (var i = 0; i < this.options.length; i++) {
+            html += `
+            <div class="row">
+                <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="defaultUnchecked${i}" name="radio-question"${(i == 0 ? 'checked' : '') + ` value="` + Base64Helper.encodeUnicode(this.options[i])}">
+                    <label class="custom-control-label" for="defaultUnchecked${i}">${this.options[i]}</label>
+                 </div>
+            </div>`;
+        }
+        html += '</form>';
+        HtmlHelper.SetHtml(container, html);
+
+        //
+        var clickPromise = new Promise();
+        return promise;
+
+        document.querySelector(button).onclick = handleNext(callbackNext, callbackAdd);
+    }
+}
+
+/*
 function RadioQuestion(
         answers
     , options
@@ -51,3 +93,4 @@ function RadioQuestion(
 // наследование
 RadioQuestion.prototype = Object.create(Question.prototype);
 RadioQuestion.prototype.constructor = Question;
+*/

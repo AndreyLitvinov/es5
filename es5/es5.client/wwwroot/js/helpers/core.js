@@ -8,7 +8,7 @@ HtmlHelper.getJson = function (url, callback, errorCallback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.withCredentials = true;
     xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
             if (xmlhttp.status == 200) {
                 callback(JSON.parse(xmlhttp.responseText))
             }
@@ -26,7 +26,7 @@ HtmlHelper.get = function (url, callback, errorCallback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.withCredentials = true;
     xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
             if (xmlhttp.status == 200) {
                 callback(xmlhttp.responseText)
             }

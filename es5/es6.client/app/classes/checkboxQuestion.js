@@ -1,5 +1,24 @@
 ﻿'use strict';
 
+import Question from "./question";
+
+export default class CheckboxQuestion extends Question {
+    constructor(answers
+        , options
+        , text) {
+        super(answers, options, text);
+    }
+
+    getScore() {
+        console.log('hello');
+    }
+
+    handleNext() {
+        console.log('handleNext');
+    }
+}
+
+/*
 function CheckboxQuestion(
     answers
     , options
@@ -55,3 +74,4 @@ function CheckboxQuestion(
 
 CheckboxQuestion.prototype = Object.create(Question.prototype);
 CheckboxQuestion.prototype.constructor = Question;
+*/
