@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
-            HtmlHelper.get("serviceconfig/", function (data) {
+            AjaxHelper.get("serviceconfig/", function (data) {
                 var controller = new TestController();
                 controller.init(data, "#content");
             });

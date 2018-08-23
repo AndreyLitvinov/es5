@@ -14,7 +14,6 @@ function RadioQuestion(
             var selector = document.querySelector('#radio-question input[name="radio-question"]:checked');
             if (selector) {
                 self.handleNext(selector.value);
-                console.info(selector.value);
             }
 
             if (callbackAdd) callbackAdd(self);

@@ -1,17 +1,15 @@
-﻿const HtmlHelper = new HtmlHelperClass();
-
-class HtmlHelperClass {
-    SetHtml = function (selector, html) {
-        var element = document.querySelector(selector);
+﻿class HtmlHelperClass {
+    constructor() { }
+    SetHtml(selector, html) {
+        const element = document.querySelector(selector);
         if (element) element.innerHTML = html;
     }
 }
 
-const Base64Helper = new Base64HelperClass();
-
 class Base64HelperClass
 {
-    decodeUnicode = function (str) {
+    constructor() { }
+    decodeUnicode(str) {
         return decodeURIComponent(atob(str).split('').map(function (c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
@@ -24,5 +22,8 @@ class Base64HelperClass
             }));
     }
 }
+
+const HtmlHelper = new HtmlHelperClass();
+const Base64Helper = new Base64HelperClass();
 
 export { HtmlHelper, Base64Helper }

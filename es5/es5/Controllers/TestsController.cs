@@ -34,6 +34,7 @@ namespace es5.Controllers
         [HttpGet("/GetNext/{number}")]
         public ActionResult<Question> GetNext(int number)
         {
+            throw new Exception("no");
             return questionsRepository.GetNext(number);
         }
         /*

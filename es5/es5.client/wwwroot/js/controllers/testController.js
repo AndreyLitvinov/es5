@@ -108,11 +108,9 @@ TestController.prototype = (function () {
     var ajaxToService = function (url) {
         HtmlHelper.SetHtml(selectorCurrentConteiner, loadHtml);
         var pormise = new Promise(function (resolve, reject) {
-            HtmlHelper.getJson(serviceUrl + url, function (data) {
+            AjaxHelper.getJson(serviceUrl + url, function (data) {
                 resolve(data);
-            }, function () {
-                reject();
-            });
+            }, reject);
         });
         return pormise;
     };
