@@ -5,6 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\LibraryModels\Basket.cs" />
+    <Compile Remove="Models\LibraryModels\LibraryCard.cs" />
+    <Compile Remove="Models\LibraryModels\LibraryCardLine.cs" />
+    <Compile Remove="Models\LibraryModels\LibraryCartLineStatus.cs" />
+    <Compile Remove="Models\LibraryModels\Reader.cs" />
+    <Compile Remove="Models\LibraryModels\SessionBasket.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

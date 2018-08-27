@@ -24,4 +24,10 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="app\services\" />
+    <Folder Include="app\constants\" />
+    <Folder Include="app\containers\" />
+  </ItemGroup>
+
 </Project>
