@@ -54,13 +54,19 @@ namespace react
             app.UseSession();
 
             // конфиг сервиса для клиента, пока только урл
-            app.UseRouter(r =>
+            app.UseRouter(routes =>
             {
-                r.MapGet("serviceconfig/", async (request, response, routeData) =>
+                routes.MapGet("serviceconfig/", async (request, response, routeData) =>
                 {
                     var url = Configuration["serviceurl"];
                     await response.WriteAsync(url);
                 });
+            });
+
+            app.Run(async (context) =>
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
             });
         }
     }

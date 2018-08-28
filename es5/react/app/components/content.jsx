@@ -11,7 +11,7 @@ export default class Content extends React.Component {
     render() {
         return (
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                <Route path="/" component={IndexPage} />
+                <Route exact path="/" component={IndexPage} />
                 <Route path="/cart" component={CartPage} />
             </main>
         );

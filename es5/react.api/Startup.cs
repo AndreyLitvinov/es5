@@ -27,7 +27,7 @@ namespace react.api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            
 
             services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("Library")));
@@ -41,7 +41,9 @@ namespace react.api
                 configure.AddDebug();
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddCors();
+
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -61,7 +63,7 @@ namespace react.api
                .AllowAnyHeader()
                .AllowCredentials());
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using react.DatabaseUpdators;
 
 namespace react.api
 {
@@ -14,11 +15,18 @@ namespace react.api
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            BuildWebHost(args)
+                // обновление данных в БД
+                //.DatabaseUpdate<RoleUpdator>()
+                .DatabaseUpdate<GenreUpdator>()
+                .DatabaseUpdate<BookUpdator>()
+                .Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        // Создание приложения для стороннего ПО(например для миграции БД)
+        public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .Build();
     }
 }

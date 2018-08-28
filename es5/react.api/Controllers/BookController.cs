@@ -8,18 +8,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace react.Controllers
 {
-    public class BookController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BooksController : ControllerBase
     {
         private IRepository<Book> repoBook;
 
-        public BookController(IRepository<Book> repos)
+        public BooksController(IRepository<Book> repos)
         {
             repoBook = repos;
         }
 
-        public IActionResult List()
+        // GET api/books
+        [HttpGet]
+        public ActionResult<IEnumerable<Book>> Get()
         {
-            return View(repoBook.GetAll());
+            return repoBook
+                .GetAll()
+                .ToList();
         }
     }
 }
