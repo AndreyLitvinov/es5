@@ -9,13 +9,7 @@ namespace react.Models.LibraryModels
 {
     public class Genre : BaseModel
     {
-        //[BindNever]
-        //public int GenreID { get; set; }
-
-        [Required(ErrorMessage = "Please enter a name genre")]
         public string Name { get; set; }
-
-        [BindNever]
         public ICollection<Book> Books { get; set; }
     }
 }

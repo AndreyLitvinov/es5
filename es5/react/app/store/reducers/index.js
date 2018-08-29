@@ -1,10 +1,8 @@
 ﻿import { combineReducers } from 'redux'
-import todos from './todos'
 import books from './books'
-import visibilityFilter from './visibilityFilter'
+import genres from './genres'
 
 export default combineReducers({
-    books,
-    todos,
-    visibilityFilter
+    booksList: books,
+    genresList: genres,
 })

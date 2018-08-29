@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using react.api.Map;
 using react.Models;
 using react.Models.Repository;
 
@@ -27,7 +29,7 @@ namespace react.api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
 
             services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("Library")));
@@ -42,8 +44,14 @@ namespace react.api
             });
 
             services.AddCors();
-
-            services.AddMvc();
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfileConfiguration());
+            }); 
+            services.AddMvc()
+                .AddJsonOptions(
+                    options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ReactDOM.render(
         <Provider store={store}>
             <Router history={history}>
-                <Route path="/" component={App} />
+                <App/>
             </Router>
         </Provider>,
         document.getElementById('app-react')

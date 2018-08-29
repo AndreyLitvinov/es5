@@ -1,19 +1,44 @@
 ﻿import React from 'react';
 import { connect } from 'react-redux';
 import booksActions from '../store/actions/booksActions';
+import genresActions from '../store/actions/genresActions';
+import books from '../store/reducers/books';
+import genres from '../store/reducers/genres';
+import persistenListStatuses from '../constants/persistenListStatuses';
 
 class IndexPage extends React.Component {
     constructor(props) {
         super(props);
+
     }
 
     componentDidMount() {
-        this.props.getAllBooks();
+        if (!this.props.booksList.fetching && !this.props.booksList.fetching) {
+            this.props.getAllBooks();
+        }
+
+        if (!this.props.genresList.fetching && !this.props.genresList.fetching) {
+            this.props.getAllGenres();
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        const { booksList: { status: booksListStatus }, genresList: { status: genresListStatus } } = this.props;
+        const { booksList: { status: nextBooksListStatus }, genresList: { status: nextGenresListStatus } } = nextProps;
+        // если изменился статус любого списка
+        if (booksListStatus != nextBooksListStatus
+            || genresListStatus != nextGenresListStatus) {
+            // если в новом стейте все списке загруженны
+            return nextBooksListStatus == persistenListStatuses.READY
+                && nextGenresListStatus == persistenListStatuses.READY;
+        }
+
+        return false;
     }
 
     render() {
-        const { books } = this.props;
-
+        const { booksList: { items: books, status: booksListStatus }, genresList: { items: genres, status: genresListStatus } } = this.props;
+        const isFeching = booksListStatus != persistenListStatuses.READY || genresListStatus != persistenListStatuses.READY; 
         return (
             <table class="table table-striped">
                 <thead class="thead-dark">
@@ -25,13 +50,14 @@ class IndexPage extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {books.map((book, index) =>
+                    {(isFeching ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center"><div class="loader"></div></div></td></tr>
+                        : books.map((book, index) =>
                         <tr scope="row" key={book.id}>
                             <td>
                                 {book.name}
                             </td>
                             <td>
-                                
+                                {genres.find(genre => genre.id == book.genreId) ? genres.find(genre => genre.id == book.genreId).name : ''}
                             </td>
                             <td>
                                 {book.annotation}
@@ -40,6 +66,7 @@ class IndexPage extends React.Component {
                                 {book.year}
                             </td>
                         </tr>
+                        )
                         )}
                 </tbody>
             </table>
@@ -49,14 +76,16 @@ class IndexPage extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-    const { books } = state;
+    const { booksList, genresList } = state;
     return {
-        books: books
+        booksList,
+        genresList
     };
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    getAllBooks: () => dispatch(booksActions.getAll())
+    getAllBooks: () => dispatch(booksActions.getAll()),
+    getAllGenres: () => dispatch(genresActions.getAll())
 })
 
 export default connect(

@@ -8,32 +8,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using react.api.ViewModels;
-using System.Threading;
 
 namespace react.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController : ControllerBase
+    public class GenresController : ControllerBase
     {
-        private IRepository<Book> repoBook;
+        private IRepository<Genre> repoGenres;
         private IMapper mapper;
 
-        public BooksController(IRepository<Book> repos, IMapper mapper)
+        public GenresController(IRepository<Genre> repos, IMapper mapper)
         {
-            repoBook = repos;
+            repoGenres = repos;
             this.mapper = mapper;
         }
 
-        // GET api/books
+        // GET api/genres
         [HttpGet]
-        public ActionResult<IEnumerable<BookViewModel>> Get()
+        public ActionResult<IEnumerable<GenreViewModel>> Get()
         {
-            Thread.Sleep(1000);
-            return repoBook
+            return repoGenres
                 .GetAll()
-                .Include(book => book.Genre)
-                .Select(book => mapper.Map<Book, BookViewModel>(book))
+                .Select(genre => mapper.Map<Genre, GenreViewModel>(genre))
                 .ToList();
         }
     }
