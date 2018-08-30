@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import booksActions from '../store/actions/booksActions';
 import genresActions from '../store/actions/genresActions';
 import persistenListStatuses from '../constants/persistenListStatuses';
+import { withRouter } from 'react-router-dom';
 
 class IndexPage extends React.Component {
     constructor(props) {
@@ -31,12 +32,16 @@ class IndexPage extends React.Component {
                 && nextGenresListStatus == persistenListStatuses.READY;
         }
 
-        return false;
+        return true;
     }
 
     render() {
-        const { booksList: { items: books, status: booksListStatus }, genresList: { items: genres, status: genresListStatus } } = this.props;
+        const { booksList: { items: books, status: booksListStatus }
+        , genresList: { items: genres, status: genresListStatus }
+        , match:{params:{genreId: genreId}} } = this.props;
         const isFeching = booksListStatus != persistenListStatuses.READY || genresListStatus != persistenListStatuses.READY; 
+
+        console.log(genreId);
         return (
             <table class="table table-striped">
                 <thead class="thead-dark">
@@ -49,7 +54,7 @@ class IndexPage extends React.Component {
                 </thead>
                 <tbody>
                     {(isFeching ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center"><div class="loader"></div></div></td></tr>
-                        : books.map((book, index) =>
+                        : books.filter(book => !genreId || book.genreId == genreId ).map((book, index) =>
                         <tr scope="row" key={book.id}>
                             <td>
                                 {book.name}
@@ -86,7 +91,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     getAllGenres: () => dispatch(genresActions.getAll())
 })
 
-export default connect(
+export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(IndexPage)
+)(IndexPage))

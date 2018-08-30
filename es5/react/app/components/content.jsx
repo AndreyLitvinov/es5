@@ -12,7 +12,7 @@ export default class Content extends React.Component {
         return (
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
                 <Route exact path="/" component={IndexPage} />
-                <Route path="/cart" component={CartPage} />
+                <Route path="/:genreId" component={IndexPage} />
             </main>
         );
     }

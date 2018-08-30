@@ -2,7 +2,7 @@
 import { connect } from 'react-redux';
 import genresActions from '../store/actions/genresActions';
 import persistenListStatuses from '../constants/persistenListStatuses';
-import MenuItem from './menuItem';
+import { NavLink, withRouter } from 'react-router-dom';
 
 class GanreMenu extends React.Component {
     constructor(props) {
@@ -23,8 +23,8 @@ class GanreMenu extends React.Component {
             // если в новом стейте все списке загруженны
             return nextGenresListStatus == persistenListStatuses.READY;
         }
-
-        return false;
+        // warning: помни про shouldComponentUpdate !
+        return true;
     }
 
     render() {
@@ -38,9 +38,12 @@ class GanreMenu extends React.Component {
                 {(isFeching ? <div class="row justify-content-md-center"><div class="loader"></div></div>
                     : 
                     <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <NavLink to="/" exact activeClassName="nav-link active" className="nav-link">Все</NavLink>
+                            </li>
                         {genres.map((genre, index) =>
                             <li class="nav-item" key={genre.id}>
-                                <MenuItem exact={true} to={`/${genre.id}`} label={genre.name}  />
+                                <NavLink to={`/${genre.id}`} exact activeClassName="nav-link active" className="nav-link">{genre.name}</NavLink>
                             </li>
                      )}
                     </ul>
@@ -61,8 +64,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     getAllGenres: () => dispatch(genresActions.getAll())
 })
 
-export default connect(
+export default withRouter(connect(
     mapStateToProps,
-    mapDispatchToProps
-)(GanreMenu)
+    mapDispatchToProps,
+)(GanreMenu))
 
