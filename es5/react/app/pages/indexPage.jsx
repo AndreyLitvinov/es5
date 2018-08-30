@@ -2,8 +2,6 @@
 import { connect } from 'react-redux';
 import booksActions from '../store/actions/booksActions';
 import genresActions from '../store/actions/genresActions';
-import books from '../store/reducers/books';
-import genres from '../store/reducers/genres';
 import persistenListStatuses from '../constants/persistenListStatuses';
 
 class IndexPage extends React.Component {
@@ -13,11 +11,11 @@ class IndexPage extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.props.booksList.fetching && !this.props.booksList.fetching) {
+        if (this.props.booksList.status == persistenListStatuses.NOT) {
             this.props.getAllBooks();
         }
 
-        if (!this.props.genresList.fetching && !this.props.genresList.fetching) {
+        if (!this.props.genresList.status == persistenListStatuses.NOT) {
             this.props.getAllGenres();
         }
     }
