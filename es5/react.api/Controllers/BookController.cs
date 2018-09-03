@@ -36,5 +36,22 @@ namespace react.Controllers
                 .Select(book => mapper.Map<Book, BookViewModel>(book))
                 .ToList();
         }
+
+        // GET api/books
+        [HttpGet]
+        // books/page/sizepage/genreid/
+        [Route("api/books/page/pagesize/genreId")]
+        public ActionResult<IEnumerable<BookViewModel>> Get(int page, int pagesize, long genreId)
+        {
+            Thread.Sleep(1000);
+            return repoBook
+                .GetAll()
+                .Include(book => book.Genre)
+                .Where(book => book.Genre != null && book.Genre.Id == genreId)
+                .Skip(page * pagesize)
+                .Take(pagesize)
+                .Select(book => mapper.Map<Book, BookViewModel>(book))
+                .ToList();
+        }
     }
 }

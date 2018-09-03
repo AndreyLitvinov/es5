@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { connect } from 'react-redux';
-import booksActions from '../store/actions/booksActions';
+import listActions from '../store/actions/tmpListsActions';
 import genresActions from '../store/actions/genresActions';
 import persistenListStatuses from '../constants/persistenListStatuses';
 import { withRouter } from 'react-router-dom';
@@ -8,16 +8,23 @@ import { withRouter } from 'react-router-dom';
 class IndexPage extends React.Component {
     constructor(props) {
         super(props);
-
+        const { booksList, addBooksList } = this.props;
+        if(!booksList){
+            addBooksList();
+        }
+        
     }
 
     componentDidMount() {
-        if (this.props.booksList.status == persistenListStatuses.NOT) {
-            this.props.getAllBooks();
+        const {booksList, genresList, getBooks, getAllGenres} = this.props;
+
+        
+        if (booksList.status == persistenListStatuses.NOT) {
+            getBooks('books/1/3/');
         }
 
-        if (!this.props.genresList.status == persistenListStatuses.NOT) {
-            this.props.getAllGenres();
+        if (!genresList.status == persistenListStatuses.NOT) {
+            getAllGenres();
         }
     }
 
@@ -36,7 +43,7 @@ class IndexPage extends React.Component {
     }
 
     render() {
-        const { booksList: { items: books, status: booksListStatus }
+        const { booksList: { items: books = [], status: booksListStatus }
         , genresList: { items: genres, status: genresListStatus }
         , match:{params:{genreId: genreId}} } = this.props;
         const isFeching = booksListStatus != persistenListStatuses.READY || genresListStatus != persistenListStatuses.READY; 
@@ -79,17 +86,20 @@ class IndexPage extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-    const { booksList, genresList } = state;
+    const { tmpLists, genresList } = state;
     return {
-        booksList,
+        booksList: tmpLists.find(list => list.key == 'IndexPage'),
         genresList
     };
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    getAllBooks: () => dispatch(booksActions.getAll()),
-    getAllGenres: () => dispatch(genresActions.getAll())
-})
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        addBooksList: () => dispatch(listActions.addList("IndexPage")),
+        getBooks: (url) => dispatch(listActions.getByRequest(url)),
+        getAllGenres: () => dispatch(genresActions.getAll())
+    }
+}
 
 export default withRouter(connect(
     mapStateToProps,
