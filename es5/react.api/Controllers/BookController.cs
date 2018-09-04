@@ -27,31 +27,44 @@ namespace react.Controllers
 
         // GET api/books
         [HttpGet]
-        public ActionResult<IEnumerable<BookViewModel>> Get()
+        public ActionResult<ListViewModel> Get()
         {
             Thread.Sleep(1000);
-            return repoBook
+            var result =
+               repoBook
                 .GetAll()
                 .Include(book => book.Genre)
                 .Select(book => mapper.Map<Book, BookViewModel>(book))
-                .ToList();
+                .ToList();  
+
+            return new ListViewModel
+            {
+                Items = result,
+                Count = result.Count
+            };
         }
 
         // GET api/books
         [HttpGet]
-        // books/page/sizepage/genreid/
-        [Route("api/books/page/pagesize/genreId")]
-        public ActionResult<IEnumerable<BookViewModel>> Get(int page, int pagesize, long genreId)
+        [Route("{page}/{pagesize}/{genreId}")]
+        public ActionResult<ListViewModel> Get(int page, int pagesize, long genreId)
         {
             Thread.Sleep(1000);
-            return repoBook
+            var result =
+                repoBook
                 .GetAll()
                 .Include(book => book.Genre)
-                .Where(book => book.Genre != null && book.Genre.Id == genreId)
-                .Skip(page * pagesize)
+                .Where(book => book.Genre != null && book.Genre.Id == genreId || genreId == 0)
+                .Skip((page - 1) * pagesize)
                 .Take(pagesize)
                 .Select(book => mapper.Map<Book, BookViewModel>(book))
                 .ToList();
+
+            return new ListViewModel
+            {
+                Items = result,
+                Count = result.Count
+            };
         }
     }
 }

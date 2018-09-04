@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace react.api.ViewModels
 {
-    public class BookViewModel
+    public class BookViewModel: BaseViewModel
     {
-        public Int64 Id { get; set; }
         public string Name { get; set; }
         public int Year { get; set; }
         public string Annotation { get; set; }

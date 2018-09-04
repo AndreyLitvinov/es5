@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import genresActions from '../store/actions/genresActions';
 import persistenListStatuses from '../constants/persistenListStatuses';
 import { NavLink, withRouter } from 'react-router-dom';
+import Loader from './loader';
 
 class GanreMenu extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class GanreMenu extends React.Component {
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                     <span>Жанры</span>
             </h6>
-                {(isFeching ? <div class="row justify-content-md-center"><div class="loader"></div></div>
+                {(isFeching ? <Loader/>
                     : 
                     <ul class="nav flex-column">
                             <li class="nav-item">
@@ -43,7 +44,7 @@ class GanreMenu extends React.Component {
                             </li>
                         {genres.map((genre, index) =>
                             <li class="nav-item" key={genre.id}>
-                                <NavLink to={`/${genre.id}`} exact activeClassName="nav-link active" className="nav-link">{genre.name}</NavLink>
+                                <NavLink to={`/books/1/3/${genre.id}`} exact activeClassName="nav-link active" className="nav-link">{genre.name}</NavLink>
                             </li>
                      )}
                     </ul>

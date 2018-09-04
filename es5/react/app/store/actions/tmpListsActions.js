@@ -9,7 +9,7 @@ function addList(key){
     return { type: tmpListsConstants.ADD, key};
 }
 
-function getByRequest(url) {
+function getByRequest(key, url) {
     return dispatch => {
         dispatch(request());
 
@@ -20,9 +20,9 @@ function getByRequest(url) {
             );
     };
 
-    function request() { return { type: tmpListsConstants.REQUEST } }
-    function success(items) { return { type: tmpListsConstants.SUCCESS, items } }
-    function failure(error) { return { type: tmpListsConstants.FAILURE, error } }
+    function request() { return { type: tmpListsConstants.REQUEST, key } }
+    function success(data) { return { type: tmpListsConstants.SUCCESS, key, items: data.items, count: data.count } }
+    function failure(error) { return { type: tmpListsConstants.FAILURE, error, key } }
 }
 
 export default tmpListsActions;
