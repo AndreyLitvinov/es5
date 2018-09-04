@@ -14,12 +14,12 @@ namespace react.DatabaseUpdators
         public async Task Update(IServiceScope scope, AppDbContext context)
         {
             var services = scope.ServiceProvider;
-            if (!context.Books.Any())
+            if (context.Books.Count() < 20)
             {
                 context.Books.AddRange(
                     new Book
                     {
-                        Name = "Гумилев сын Гумилева",
+                        Name = "Гумилев сын Гумилева 2 часть",
                         Annotation = "Финалист национальной премии \"Большая книга — 2013\". Самая полная, основанная на уникальных документах и материалах, биография ученого и человека с судьбой счастливой, трагичной...",
                         Count = 18,
                         Year = 1989,
@@ -27,7 +27,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Лев Толстой: Бегство из рая",
+                        Name = "Лев Толстой: Бегство из рая 2 часть",
                         Annotation = "Исследование жизни и смерти Толстого. Национальная премия \"Большая книга\".",
                         Count = 45,
                         Year = 1958,
@@ -35,7 +35,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Эта странная жизнь",
+                        Name = "Эта странная жизнь 2 часть",
                         Annotation = "Документальная повесть о биологе, энтомологе, философе Александре Любищеве.",
                         Count = 0,
                         Year = 1974,
@@ -43,7 +43,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Город мертвых",
+                        Name = "Город мертвых 2 часть",
                         Annotation = "Идет война против человечества. Когда небольшой городок Райнбоу Фалс в штате Монтана попадает в осаду, выжившие жители решают собраться с последними силами и начать страшную борьбу против существ, разгуливающих по всему миру…",
                         Count = 5,
                         Year = 1981,
@@ -51,7 +51,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Стрелок",
+                        Name = "Стрелок 2 часть",
                         Annotation = "Есть только один, кто способен спасти этот сдвинувшийся мир. И от него не будет пощады.",
                         Count = 5,
                         Year = 1980,
@@ -59,7 +59,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Извлечение троих",
+                        Name = "Извлечение троих 2 часть",
                         Annotation = "Роланду откроет двери между мирами, чтобы спасти Узника, сразиться с Госпожой Теней и встретить Смерть.",
                         Count = 9,
                         Year = 1990,
@@ -67,7 +67,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Ударные согласные",
+                        Name = "Ударные согласные 2 часть",
                         Annotation = "О пиарщиках умирающего завода, молодых самонадеянных властителях провинциальных умов, пытающихся корпоративным духом ударить по экономическому кризису, казнокрадству и разгильдяйству.",
                         Count = 8,
                         Year = 1997,
@@ -75,7 +75,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Мартин Иден",
+                        Name = "Мартин Иден 2 часть",
                         Annotation = "Известная социальная драма американского классика-реалиста о надеждах, мечтах и трудном пути человека к их исполнению.",
                         Count = 15,
                         Year = 1991,
@@ -83,7 +83,7 @@ namespace react.DatabaseUpdators
                     },
                     new Book
                     {
-                        Name = "Осуждённый",
+                        Name = "Осуждённый 2 часть",
                         Annotation = "Небольшой детектив древнего мира.",
                         Count = 520,
                         Year = 1999,

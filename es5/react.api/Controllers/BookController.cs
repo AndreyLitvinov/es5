@@ -55,14 +55,16 @@ namespace react.Controllers
                 .GetAll()
                 .Include(book => book.Genre)
                 .Where(book => book.Genre != null && book.Genre.Id == genreId || genreId == 0)
+                .Select(book => mapper.Map<Book, BookViewModel>(book))
+                .ToList();
+            var pageResult = result
                 .Skip((page - 1) * pagesize)
                 .Take(pagesize)
-                .Select(book => mapper.Map<Book, BookViewModel>(book))
                 .ToList();
 
             return new ListViewModel
             {
-                Items = result,
+                Items = pageResult,
                 Count = result.Count
             };
         }

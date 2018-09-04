@@ -18,11 +18,23 @@ class IndexPage extends React.Component {
     }
 
     componentDidMount() {
-        const {booksList, genresList, getBooks, getAllGenres, match:{params:{genreId, page}}} = this.props;
+        const {
+            booksList
+            , genresList
+            , getBooks
+            , getAllGenres
+            , match:{
+                params:{
+                    genreId
+                    , page
+                    , pagesize
+                }
+            }
+        }= this.props;
 
         
         if (!booksList || booksList.status == persistenListStatuses.NOT) {
-            getBooks(`books/${page || 1}/3/${genreId || 0}`);
+            getBooks(`books/${page || 1}/${pagesize || 3}/${genreId || 0}`);
         }
 
         if (genresList.status == persistenListStatuses.NOT) {
@@ -33,11 +45,24 @@ class IndexPage extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         // не понятно как запустить инициализацию до первого рендера! addBooksList
         // const { booksList: { status: booksListStatus }, genresList: { status: genresListStatus } } = this.props;
-        const { booksList = { items:{}, status: persistenListStatuses.NOT }, getBooks, genresList = { items:{}, status: persistenListStatuses.NOT }, match:{params:{genreId, page}}} = this.props;
+        const {
+               booksList = { items:{}, status: persistenListStatuses.NOT }
+             , getBooks
+             , genresList = { items:{}, status: persistenListStatuses.NOT }
+             , match:{params:{genreId, page, pagesize}}
+            } = this.props;
+
         const { status: booksListStatus } = booksList;
         const { status: genresListStatus } = genresList;
 
-        const { booksList: { status: nextBooksListStatus }, genresList: { status: nextGenresListStatus }, match:{params:{genreId: nextGenreId, page: nextPage}} } = nextProps;
+        const { 
+            booksList: { status: nextBooksListStatus }
+            , genresList: { status: nextGenresListStatus }
+            , match:{
+                params:{genreId: nextGenreId, page: nextPage, pagesize: nextPagesize}
+            } 
+        } = nextProps;
+
         // если изменился статус любого списка
         if (booksListStatus != nextBooksListStatus
             || genresListStatus != nextGenresListStatus) {
@@ -48,15 +73,23 @@ class IndexPage extends React.Component {
         }
 
         if(nextGenreId != genreId
-        || page != nextPage){
-            getBooks(`books/${nextPage || 1}/3/${nextGenreId || 0}`);
+        || page != nextPage
+        || pagesize != nextPagesize){
+            getBooks(`books/${nextPage || 1}/${nextPagesize || 3}/${nextGenreId || 0}`);
         }
         
         return true;
     }
 
     render() {
-        const {booksList = { items:{}, status: persistenListStatuses.NOT }, genresList = { items:{}, status: persistenListStatuses.NOT },  match:{params:{genreId, page, pagesize}}} = this.props;
+        const { 
+            booksList = { items:{}, status: persistenListStatuses.NOT }
+            , genresList = { items:{}, status: persistenListStatuses.NOT }
+            ,  match:{
+                params:{genreId, page, pagesize}
+            }
+        } = this.props;
+        
         const { items: books = [], status: booksListStatus } = booksList;
         const { items: genres, status: genresListStatus } = genresList;
         const isFeching = booksListStatus != persistenListStatuses.READY || genresListStatus != persistenListStatuses.READY; 
@@ -94,7 +127,7 @@ class IndexPage extends React.Component {
                         )}
                 </tbody>
             </table>
-            <Pager page={page || 1} count={booksList.count} urlTemplate={`/books/{page}/${pagesize || 3}/${genreId || 0}`} />
+            <Pager page={page || 1} size={pagesize || 3} count={booksList.count} urlTemplate={`/books/{page}/${pagesize || 3}/${genreId || 0}`} />
             </div>
         );
     }
