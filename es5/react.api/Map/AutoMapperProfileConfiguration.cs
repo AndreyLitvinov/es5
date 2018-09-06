@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using react.api.ViewModels;
-using react.Models.LibraryModels;
+using react.api.Models.LibraryModels;
 
 namespace react.api.Map
 {

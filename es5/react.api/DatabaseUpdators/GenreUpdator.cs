@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using react.Models.LibraryModels;
+using react.api.Models.LibraryModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using react.Models;
+using react.api.Models;
 
-namespace react.DatabaseUpdators
+namespace react.api.DatabaseUpdators
 {
     public class GenreUpdator : IDatabaseUpdator
     {
@@ -38,7 +38,7 @@ namespace react.DatabaseUpdators
                         Name = "Драма",
                     }
                 );
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

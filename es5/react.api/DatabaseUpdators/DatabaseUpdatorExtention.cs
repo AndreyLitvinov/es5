@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using react.Models;
+using react.api.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace react.DatabaseUpdators
+namespace react.api.DatabaseUpdators
 {
     public static class DatabaseUpdatorExtention
     {

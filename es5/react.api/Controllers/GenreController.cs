@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using react.Models.LibraryModels;
-using react.Models.Repository;
+using react.api.Models.LibraryModels;
+using react.api.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using react.api.ViewModels;
 
-namespace react.Controllers
+namespace react.api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

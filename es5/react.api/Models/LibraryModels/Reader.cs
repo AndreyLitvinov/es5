@@ -1,17 +1,16 @@
-﻿using Library.Models.IdentityModels;
+﻿using react.api.Models.IdentityModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace react.Models.LibraryModels
+namespace react.api.Models.LibraryModels
 {
     public class Reader : BaseModel
     {
-        //[BindNever]
-        //public int ReaderID { get; set; }
-
+        public string FirstName { get; set; }
+        
         [BindNever]
         public AppUser User { get; set; }
     }

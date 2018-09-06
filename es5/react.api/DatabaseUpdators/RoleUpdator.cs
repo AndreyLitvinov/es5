@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Library.Models.IdentityModels;
+using react.api.Models.IdentityModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using react.api.Models;
+using react.api.Repository;
 
-namespace Library.Models.DatabaseUpdators
+namespace react.api.DatabaseUpdators
 {
     public class RoleUpdator : IDatabaseUpdator
     {
         public async Task Update(IServiceScope scope, AppDbContext context)
         {
             var services = scope.ServiceProvider;
-            var userManager = services.GetRequiredService<UserManager<AppUser>>();
-            var rolesManager = services.GetRequiredService<RoleManager<AppRole>>();
+            var userManager = services.GetRequiredService<IUserRepository>();
+            var rolesManager = services.GetRequiredService<IRoleRepository>();
 
-            string adminEmail = "a.litvinov@qpdev.ru";
+            string username = "admin";
             string password = "BGTnhyMJU100";
 
             foreach (var role in DefaultRoles.AllRoles)
@@ -27,11 +29,12 @@ namespace Library.Models.DatabaseUpdators
                 }
             }
            
-            if (await userManager.FindByNameAsync(adminEmail) == null)
+            if (await userManager.FindByUsernameAsync(username) == null)
             {
-                var admin = new AppUser { Email = adminEmail, UserName = adminEmail };
-                IdentityResult result = await userManager.CreateAsync(admin, password);
-                if (result.Succeeded)
+                var admin = new AppUser { Username = username };
+
+                var user = await userManager.CreateAsync(admin, password);
+                if (user != null)
                 {
                     await userManager.AddToRoleAsync(admin, DefaultRoles.Admin);
                 }

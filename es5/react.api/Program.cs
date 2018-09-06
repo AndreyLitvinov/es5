@@ -7,7 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using react.DatabaseUpdators;
+using react.api.DatabaseUpdators;
 
 namespace react.api
 {
@@ -17,7 +17,7 @@ namespace react.api
         {
             BuildWebHost(args)
                 // обновление данных в БД
-                //.DatabaseUpdate<RoleUpdator>()
+                .DatabaseUpdate<RoleUpdator>()
                 .DatabaseUpdate<GenreUpdator>()
                 .DatabaseUpdate<BookUpdator>()
                 .Run();

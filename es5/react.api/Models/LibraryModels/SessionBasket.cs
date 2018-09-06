@@ -1,4 +1,4 @@
-﻿using Library.Infrastructure;
+﻿using react.api.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace react.Models.LibraryModels
+namespace react.api.Models.LibraryModels
 {
     public class SessionBasket : Basket
     {

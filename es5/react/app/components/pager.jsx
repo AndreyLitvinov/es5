@@ -10,7 +10,6 @@ export default class Pager extends React.Component {
     constructor(props) {
         super(props);
     }
-
     
     render() {
         const { page, count, size, urlTemplate } = this.props;

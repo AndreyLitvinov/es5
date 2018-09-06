@@ -1,10 +1,10 @@
-﻿using react.Models.LibraryModels;
+﻿using react.api.Models.LibraryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace react.Models.Repository
+namespace react.api.Repository
 {
     public interface IRepository<T> where T : BaseModel
     {

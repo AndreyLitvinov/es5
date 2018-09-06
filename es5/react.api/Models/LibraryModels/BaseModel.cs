@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace react.Models.LibraryModels
+namespace react.api.Models.LibraryModels
 {
     public class BaseModel
     {
