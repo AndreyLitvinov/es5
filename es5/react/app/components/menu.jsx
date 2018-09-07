@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import GanreMenu from './ganreMenu';
+import GanreMenu from './genreMenu';
 import UserMenu from './userMenu';
 
 export default class Menu extends React.Component {

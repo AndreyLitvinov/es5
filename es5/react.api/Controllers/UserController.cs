@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace react.api.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {

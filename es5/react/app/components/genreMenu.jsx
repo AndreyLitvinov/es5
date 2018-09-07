@@ -5,7 +5,7 @@ import persistenListStatuses from '../constants/persistenListStatuses';
 import { NavLink, withRouter } from 'react-router-dom';
 import Loader from './loader';
 
-class GanreMenu extends React.Component {
+class GenreMenu extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -68,4 +68,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(GanreMenu))
+)(GenreMenu))

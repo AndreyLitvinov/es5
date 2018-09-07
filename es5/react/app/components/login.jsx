@@ -3,15 +3,24 @@
 export default class Login extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {showLoginForm: false};
+    }
+
+    loginClick(){
+        this.setState({
+            showLoginForm: true
+        });
     }
 
     render() {
         return (
-            <ul class="navbar-nav px-1">
-                <li class="nav-item text-nowrap">
-                    <a class="nav-link" href="#">Войти</a>
-                </li>
-            </ul>
+            <div>
+                <ul class="navbar-nav px-1">
+                    <li class="nav-item text-nowrap">
+                        <button class="nav-link" onClick={this.loginClick}>Войти</button>
+                    </li>
+                </ul>
+            </div>
         );
     }
 }
