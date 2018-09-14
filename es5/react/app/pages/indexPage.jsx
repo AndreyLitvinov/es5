@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 import listActions from '../store/actions/tmpListsActions';
 import genresActions from '../store/actions/genresActions';
 import persistenListStatuses from '../constants/persistenListStatuses';
-import { withRouter } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 import Loader from '../components/loader';
 import Pager from '../components/pager';
-
+import { UserComponent, AdminComponent } from '../components/authorization';
+import basketActions from '../store/actions/basketActions';
+import { basketStatuses } from '../constants/basketConstants';
 
 class IndexPage extends React.Component {
     constructor(props) {
@@ -15,6 +17,13 @@ class IndexPage extends React.Component {
         if(!booksList){
             addBooksList();
         }
+
+
+    }
+
+    addBookToBaskeClick(bookId){
+        const { addBookToBasket } = this.props;
+        return (e) => { addBookToBasket(bookId); };
     }
 
     componentDidMount() {
@@ -50,6 +59,7 @@ class IndexPage extends React.Component {
              , getBooks
              , genresList = { items:{}, status: persistenListStatuses.NOT }
              , match:{params:{genreId, page, pagesize}}
+             
             } = this.props;
 
         const { status: booksListStatus } = booksList;
@@ -88,6 +98,7 @@ class IndexPage extends React.Component {
             ,  match:{
                 params:{genreId, page, pagesize}
             }
+            , basket:{ status: basketStatus }
         } = this.props;
         
         const { items: books = [], status: booksListStatus } = booksList;
@@ -103,6 +114,14 @@ class IndexPage extends React.Component {
                         <th scope="col">Жанр</th>
                         <th scope="col">Аннотация</th>
                         <th scope="col">Год</th>
+                        <UserComponent>
+                            <th scope="col">
+                            </th>
+                        </UserComponent>
+                        <AdminComponent>
+                            <th scope="col">
+                            </th>
+                        </AdminComponent>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,6 +141,21 @@ class IndexPage extends React.Component {
                             <td>
                                 {book.year}
                             </td>
+                            <UserComponent>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" onClick={this.addBookToBaskeClick(book.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-cart-plus"></i></button>
+                                    </div>
+                                </td>
+                            </UserComponent>
+                            <AdminComponent>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <NavLink to={`/book/edit/${book.id}`} className="btn btn-outline-success"><i class="fas fa-edit"></i></NavLink>
+                                        <NavLink to={`/book/remove/${book.id}`} className="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></NavLink>
+                                    </div>
+                                </td>
+                            </AdminComponent>
                         </tr>
                         )
                         )}
@@ -135,11 +169,12 @@ class IndexPage extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-    const { tmpLists, genresList, filter } = state;
+    const { tmpLists, genresList, filter, basket } = state;
     return {
         booksList: tmpLists.find(list => list.key == 'IndexPage'),
         genresList,
-        filter
+        filter,
+        basket
     };
 }
 
@@ -149,6 +184,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         addBooksList: () => dispatch(listActions.addList("IndexPage")),
         getBooks: (url) => dispatch(listActions.getByRequest("IndexPage", url)),
         getAllGenres: () => dispatch(genresActions.getAll()),
+        addBookToBasket:(bookId) => dispatch(basketActions.add(bookId)),
     }
 }
 

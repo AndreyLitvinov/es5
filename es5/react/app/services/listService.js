@@ -1,4 +1,5 @@
 import apiConstants from '../constants/apiConstants';
+import authHeader from './authorizationHelper';
 import 'whatwg-fetch';
 
 const listService = {
@@ -11,7 +12,9 @@ function getByRequest(requestUrl) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            ...authHeader(),
+            
         },
     };
 

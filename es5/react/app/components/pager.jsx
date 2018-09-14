@@ -19,7 +19,6 @@ export default class Pager extends React.Component {
             <nav>
                 {pageCount < 11 ?
                 <ul class="pagination justify-content-end">
-
                     <li class={ !page || page == 1 ? 'page-item disabled' : 'page-item'} >
                         <NavLink to={urlTemplate.replace(/{page}/gi, page - 1)} className="page-link">&#60;</NavLink>
                     </li>

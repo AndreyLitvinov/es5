@@ -27,6 +27,8 @@ namespace react.api.Repository
 
             var user = await context.Users
                 .Include(x => x.Reader)
+                .Include(x => x.UserRoles)
+                    .ThenInclude(x => x.Role)
                 .SingleOrDefaultAsync(x => x.Username == username);
 
             // существует ли пользователь с таким именем
@@ -89,6 +91,7 @@ namespace react.api.Repository
             };
 
             await context.AppUserRoles.AddAsync(userRole);
+            await context.SaveChangesAsync();
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

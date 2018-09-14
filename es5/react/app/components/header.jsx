@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import Login from './login';
 import Cart from './card';
+import { UserComponent } from './authorization';
 
 export default class Header extends React.Component {
     constructor(props) {
@@ -15,7 +16,9 @@ export default class Header extends React.Component {
                 </div>
 
                 <div className="col-md-auto">
-                    <Cart />
+                    <UserComponent>
+                        <Cart />
+                    </UserComponent>
                 </div>
                 <div className="col-md-auto">
                     <Login />

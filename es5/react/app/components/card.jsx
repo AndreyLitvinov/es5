@@ -1,13 +1,43 @@
 ﻿import React from 'react';
+import basketActions from '../store/actions/basketActions';
+import { basketStatuses } from '../constants/basketConstants';
+import Loader from './loader';
+import { connect } from 'react-redux';
 
-export default class Cart extends React.Component {
+const cardDiv = {
+    color: 'rgba(255,255,255,.5)'
+}
+
+class Cart extends React.Component {
     constructor(props) {
         super(props);
+
+        const { getBasket, basket } = this.props;
+        if(basket.status != basketStatuses.SUCCESS)
+         getBasket();
     }
 
     render() {
-        return (
-            <i class="text-info fas fa-shopping-cart"></i>
-        );
+        const { basket } = this.props;
+        const isLoading = basket.status != basketStatuses.SUCCESS;
+    return ( isLoading ? <Loader/> : <div style={cardDiv}>В корзине {basket.count} книг <i class="text-info fas fa-shopping-cart"></i></div> );
     }
 }
+
+const mapStateToProps = (state, ownProps) => {
+    const { basket } = state;
+    return {
+        basket
+    };
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        getBasket: () => dispatch(basketActions.get()),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Cart)

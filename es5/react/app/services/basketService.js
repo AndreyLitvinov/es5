@@ -1,22 +1,42 @@
 import apiConstants from '../constants/apiConstants';
+import authHeader from './authorizationHelper';
+
 import 'whatwg-fetch';
 
-const userService = {
-    login
+const basketService = {
+    get,
+    add
 };
 
-function login(username, password) {
-
+function get() {
+    
     const requestOptions = {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            ...authHeader(),
         },
-        body: JSON.stringify({username, password})
+        credentials: "include" 
     };
 
-    return fetch(apiConstants.URL + 'user/authenticate', requestOptions)
+    return fetch(apiConstants.URL + 'basket', requestOptions)
+        .then(handleResponse, handleError);
+}
+
+function add(bookId) {
+    
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            ...authHeader(),
+        },
+        credentials: "include" 
+    };
+
+    return fetch(`${apiConstants.URL}basket/add/${bookId}`, requestOptions)
         .then(handleResponse, handleError);
 }
 
@@ -40,4 +60,4 @@ function handleError(error) {
     return Promise.reject(error && error.message);
 }
 
-export default userService;
+export default basketService;

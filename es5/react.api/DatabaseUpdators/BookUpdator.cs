@@ -90,7 +90,8 @@ namespace react.api.DatabaseUpdators
                         Genre = context.Genres.FirstOrDefault(genre => genre.Name == "Драма")
                     }
                 );
-                context.SaveChanges();
+
+                await context.SaveChangesAsync();
             }
         }
     }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using react.api.ViewModels;
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 
 namespace react.api.Controllers
 {

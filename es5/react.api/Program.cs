@@ -15,12 +15,14 @@ namespace react.api
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args)
-                // обновление данных в БД
-                .DatabaseUpdate<RoleUpdator>()
-                .DatabaseUpdate<GenreUpdator>()
-                .DatabaseUpdate<BookUpdator>()
-                .Run();
+            var host = BuildWebHost(args);
+            
+            // обновление данных в БД
+            DatabaseUpdator.DatabaseUpdate<RoleUpdator>(host).Wait();
+            DatabaseUpdator.DatabaseUpdate<GenreUpdator>(host).Wait();
+            DatabaseUpdator.DatabaseUpdate<BookUpdator>(host).Wait();
+                
+            host.Run();
         }
 
         // Создание приложения для стороннего ПО(например для миграции БД)

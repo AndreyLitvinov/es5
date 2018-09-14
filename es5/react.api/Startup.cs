@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using react.api.Map;
 using react.api.Models;
+using react.api.Models.LibraryModels;
 using react.api.Repository;
 
 namespace react.api
@@ -36,8 +38,19 @@ namespace react.api
 
             services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("Library")));
+            services.AddCors();
+            services.AddMvc()
+                .AddJsonOptions(
+                    options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
 
+            services.AddMemoryCache();
+            services.AddSession();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+            services.AddTransient(typeof(IUserRepository), typeof(UserRepository));
+            services.AddTransient(typeof(IRoleRepository), typeof(RoleRepository));
+            services.AddScoped<Basket>(sp => SessionBasket.GetBasket(sp));
 
             services.AddLogging(configure =>
             {
@@ -71,15 +84,12 @@ namespace react.api
                 });
 
 
-            services.AddCors();
+            
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile(new AutoMapperProfileConfiguration());
             }); 
-            services.AddMvc()
-                .AddJsonOptions(
-                    options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -98,7 +108,8 @@ namespace react.api
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials());
-
+               
+            app.UseSession();
             app.UseAuthentication();
 
             app.UseMvc();

@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace react.api.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -38,17 +38,22 @@ namespace react.api.Controllers
         {
             var user = await userService.AuthenticateAsync(login.Username, login.Password);
             if(user ==  null)
-                return BadRequest("Username or password is incorrect");
+                return BadRequest("Логин или пароль неверный!");
 
             var tokenHandler = new JwtSecurityTokenHandler();
             
             var key = Encoding.ASCII.GetBytes(appSettings.Key);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[] 
+            var claims = new List<Claim> 
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
+                };
+
+            claims.AddRange(user.UserRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole.Role?.Name)));
+            
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                
                 Expires = DateTime.UtcNow.AddMinutes(appSettings.ExpiresMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -59,7 +64,8 @@ namespace react.api.Controllers
             return new UserViewModel{
                 Id = user.Id,
                 Token = tokenString,
-                FirstName = user.Reader?.FirstName
+                FirstName = user.Reader?.FirstName,
+                Role = user.UserRoles?.FirstOrDefault()?.Role?.Name
             };
         }
     }

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace react.api.DatabaseUpdators
 {
-    public static class DatabaseUpdatorExtention
+    public static class DatabaseUpdator
     {
-        public static IWebHost DatabaseUpdate<TUpdator>(this IWebHost host) where TUpdator : IDatabaseUpdator, new()
+        public async static Task DatabaseUpdate<TUpdator>(IWebHost host) where TUpdator : IDatabaseUpdator, new()
         {
             
             try
@@ -22,7 +22,7 @@ namespace react.api.DatabaseUpdators
                     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                     context.Database.Migrate();
                     var updator = new TUpdator();
-                    updator.Update(scope, context);
+                    await updator.Update(scope, context);
                 }
             }
             catch (Exception ex)
@@ -36,8 +36,6 @@ namespace react.api.DatabaseUpdators
                     logger.LogError(ex, ex.Message);
                 }
             }
-
-            return host;
         }
     }
 

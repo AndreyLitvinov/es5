@@ -20,6 +20,9 @@ namespace react.api.Map
             CreateMap<Book, BookViewModel> ()
                 .ForMember(view => view.GenreId, opt => opt.MapFrom(model => model.Genre != null ? (long?)model.Genre.Id : null));
 
+            CreateMap<Basket, BasketViewModel> ()
+                .ForMember(view => view.Count, opt => opt.MapFrom(model => model.Lines != null ? (long?)model.Lines.Sum(line => line.Count) : null));
+
             CreateMap<Genre, GenreViewModel>();
         }
     }

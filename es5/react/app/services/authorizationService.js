@@ -1,22 +1,35 @@
-﻿import apiConstants from '../constants/apiConstants';
+import apiConstants from '../constants/apiConstants';
 import 'whatwg-fetch';
 
-const booksService = {
-    getAll
+const authorizationService = {
+    login,
+    logout 
 };
 
-function getAll() {
-    let user = JSON.parse(localStorage.getItem('user'));
+function login(username, password) {
+
     const requestOptions = {
-        method: 'GET',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
+
+        body: JSON.stringify({username, password})
     };
 
-    return fetch(apiConstants.URL + 'books', requestOptions)
-        .then(handleResponse, handleError);
+    return fetch(apiConstants.URL + 'user/authenticate', requestOptions)
+        .then(handleResponse, handleError)
+        .then(user => {
+            if(user && user.token){
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+             return user;
+        });
+}
+
+function logout(username, password) {
+    localStorage.removeItem('user');
 }
 
 
@@ -39,4 +52,4 @@ function handleError(error) {
     return Promise.reject(error && error.message);
 }
 
-export default booksService;
+export default authorizationService;

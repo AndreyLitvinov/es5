@@ -18,8 +18,7 @@ namespace react.api.DatabaseUpdators
             var userManager = services.GetRequiredService<IUserRepository>();
             var rolesManager = services.GetRequiredService<IRoleRepository>();
 
-            string username = "admin";
-            string password = "BGTnhyMJU100";
+
 
             foreach (var role in DefaultRoles.AllRoles)
             {
@@ -28,17 +27,24 @@ namespace react.api.DatabaseUpdators
                     await rolesManager.CreateAsync(new AppRole(role));
                 }
             }
-           
-            if (await userManager.FindByUsernameAsync(username) == null)
-            {
-                var admin = new AppUser { Username = username };
 
-                var user = await userManager.CreateAsync(admin, password);
-                if (user != null)
+            string password = "BGTnhyMJU100";
+            
+            foreach (var role in DefaultRoles.AllRoles)
+            {
+                var username = role.ToLower();
+                if (await userManager.FindByUsernameAsync(username) == null)
                 {
-                    await userManager.AddToRoleAsync(admin, DefaultRoles.Admin);
+                    var newUser = new AppUser { Username = username };
+
+                    var user = await userManager.CreateAsync(newUser, password);
+                    if (user != null)
+                    {
+                        await userManager.AddToRoleAsync(newUser, role);
+                    }
                 }
             }
+            
         }
     }
 }
