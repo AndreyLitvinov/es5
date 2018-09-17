@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -47,10 +48,14 @@ namespace react.api
             services.AddMemoryCache();
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+             services.AddTransient<ClaimsPrincipal>(
+                s => s.GetService<IHttpContextAccessor>().HttpContext.User);
+
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-            services.AddTransient(typeof(IUserRepository), typeof(UserRepository));
-            services.AddTransient(typeof(IRoleRepository), typeof(RoleRepository));
-            services.AddScoped<Basket>(sp => SessionBasket.GetBasket(sp));
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
 
             services.AddLogging(configure =>
             {

@@ -13,8 +13,7 @@ class Cart extends React.Component {
         super(props);
 
         const { getBasket, basket } = this.props;
-        if(basket.status != basketStatuses.SUCCESS)
-         getBasket();
+        getBasket();
     }
 
     render() {
@@ -25,9 +24,10 @@ class Cart extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const { basket } = state;
+    const { basket, authorization } = state;
     return {
-        basket
+        basket,
+        authorization
     };
 }
 

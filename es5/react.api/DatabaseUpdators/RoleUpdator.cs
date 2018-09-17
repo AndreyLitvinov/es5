@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using react.api.Models;
 using react.api.Repository;
+using react.api.Models.LibraryModels;
 
 namespace react.api.DatabaseUpdators
 {
@@ -15,9 +16,9 @@ namespace react.api.DatabaseUpdators
         public async Task Update(IServiceScope scope, AppDbContext context)
         {
             var services = scope.ServiceProvider;
-            var userManager = services.GetRequiredService<IUserRepository>();
+            var userManager = services.GetRequiredService<IUserService>();
             var rolesManager = services.GetRequiredService<IRoleRepository>();
-
+            var readerService = services.GetRequiredService<IRepository<Reader>>();
 
 
             foreach (var role in DefaultRoles.AllRoles)
@@ -33,15 +34,20 @@ namespace react.api.DatabaseUpdators
             foreach (var role in DefaultRoles.AllRoles)
             {
                 var username = role.ToLower();
-                if (await userManager.FindByUsernameAsync(username) == null)
+                var user = await userManager.FindByUsernameAsync(username);
+                if (user == null)
                 {
                     var newUser = new AppUser { Username = username };
-
-                    var user = await userManager.CreateAsync(newUser, password);
+                    user = await userManager.CreateAsync(newUser, password);
                     if (user != null)
                     {
-                        await userManager.AddToRoleAsync(newUser, role);
+                        await userManager.AddToRoleAsync(user, role);
                     }
+                }
+
+                if(user.Reader ==  null)
+                {
+                    readerService.Insert(new Reader{User = user});
                 }
             }
             

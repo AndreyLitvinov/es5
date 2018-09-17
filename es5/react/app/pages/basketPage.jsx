@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import listActions from '../store/actions/tmpListsActions';
 import genresActions from '../store/actions/genresActions';
@@ -17,8 +17,6 @@ class IndexPage extends React.Component {
         if(!booksList){
             addBooksList();
         }
-
-
     }
 
     addBookToBaskeClick(bookId){
@@ -161,7 +159,7 @@ class IndexPage extends React.Component {
                         )}
                 </tbody>
             </table>
-            <Pager page={page || 1} size={pagesize || 3} count={booksList.count} urlTemplate={`/books/page{page}/pagesize${pagesize || 3}/genre${genreId || 0}`} />
+            <Pager page={page || 1} size={pagesize || 3} count={booksList.count} urlTemplate={`/books/{page}/${pagesize || 3}/${genreId || 0}`} />
             </div>
         );
     }

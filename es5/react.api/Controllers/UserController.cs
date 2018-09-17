@@ -22,11 +22,11 @@ namespace react.api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IUserRepository userService;
+        private IUserService userService;
         private AppSettings appSettings;
         private IMapper mapper;
 
-        public UserController(IUserRepository userService, IOptions<AppSettings> appSettings)
+        public UserController(IUserService userService, IOptions<AppSettings> appSettings)
         {
             this.userService = userService;
             this.appSettings = appSettings.Value;

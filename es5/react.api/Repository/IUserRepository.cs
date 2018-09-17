@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using react.api.Models.IdentityModels;
 
 namespace react.api.Repository{
-    public interface IUserRepository
+    public interface IUserService
     {
         Task<AppUser> AuthenticateAsync(string username, string password);
 
@@ -15,5 +15,10 @@ namespace react.api.Repository{
         Task<AppUser> FindByUsernameAsync(string username);
 
         Task AddToRoleAsync(AppUser user, string role);
+        
+        AppUser GetCurrentUser();
+        Task<AppUser> GetCurrentUserAsync();
+
+        long CurrentUserId { get; }
     }
 }

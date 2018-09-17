@@ -44,7 +44,7 @@ class GenreMenu extends React.Component {
                             </li>
                         {genres.map((genre, index) =>
                             <li class="nav-item" key={genre.id}>
-                                <NavLink to={`/books/1/3/${genre.id}`} exact activeClassName="nav-link active" className="nav-link">{genre.name}</NavLink>
+                                <NavLink to={`/books/page1/pagesize3/genre${genre.id}`} exact activeClassName="nav-link active" className="nav-link">{genre.name}</NavLink>
                             </li>
                      )}
                     </ul>

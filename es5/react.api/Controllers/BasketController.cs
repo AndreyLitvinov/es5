@@ -20,13 +20,13 @@ namespace react.api.Controllers
     {
         private IRepository<Book> repoBook;
         private IMapper mapper;
-        private Basket basket;
+        private IBasketRepository basketService;
 
-        public BasketController(IRepository<Book> repos, Basket basketService, IMapper mapper)
+        public BasketController(IRepository<Book> repos, IBasketRepository basketService, IMapper mapper)
         {
             repoBook = repos;
             this.mapper = mapper;
-            basket = basketService;
+            this.basketService = basketService;
         }
 
         // GET api/basket
@@ -34,22 +34,22 @@ namespace react.api.Controllers
         public ActionResult<BasketViewModel> Get()
         {
             return mapper
-                .Map<Basket, BasketViewModel>(basket);
+                .Map<IBasketRepository, BasketViewModel>(basketService);
         }
 
         // GET api/basket/addbooktocard/
         [HttpGet]
         [Route("Add/{bookid}")]
-        public ActionResult<BasketViewModel> Add(long bookId)
+        public async Task<ActionResult<BasketViewModel>> Add(long bookId)
         {
             var book = repoBook.Get(bookId);
             if (book != null)
             {
-                basket.AddItem(book, 1);
+                await basketService.AddItem(book, 1);
             }
 
             return mapper
-                .Map<Basket, BasketViewModel>(basket);
+                .Map<IBasketRepository, BasketViewModel>(basketService);
         }
     }
 }

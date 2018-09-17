@@ -6,19 +6,26 @@ using react.api.Models;
 using react.api.Models.IdentityModels;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace react.api.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserService : IUserService
     {
         private readonly AppDbContext context;
         private readonly IRoleRepository roleService;
+
+        private readonly IHttpContextAccessor httpContext;
         string errorMessage = string.Empty;
 
-        public UserRepository(AppDbContext context, IRoleRepository roleService)
+        public long CurrentUserId => Int64.Parse(httpContext.HttpContext.User?.FindFirst(ClaimTypes.Name)?.Value);
+
+        public UserService(AppDbContext context, IRoleRepository roleService, IHttpContextAccessor httpContext)
         {
             this.context = context;
             this.roleService = roleService;
+            this.httpContext = httpContext;
         }
         public async Task<AppUser> AuthenticateAsync(string username, string password)
         {
@@ -92,6 +99,22 @@ namespace react.api.Repository
 
             await context.AppUserRoles.AddAsync(userRole);
             await context.SaveChangesAsync();
+        }
+        
+        public Task<AppUser> GetCurrentUserAsync()
+        {
+            return context.Users
+                .Include(user => user.Reader)
+                //.ThenInclude(reader => reader)
+                .FirstOrDefaultAsync(user => user.Id == CurrentUserId);
+        }
+
+        public AppUser GetCurrentUser()
+        {
+            return context.Users
+                .Include(user => user.Reader)
+                //.ThenInclude(reader => reader)
+                .FirstOrDefault(user => user.Id == CurrentUserId);
         }
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

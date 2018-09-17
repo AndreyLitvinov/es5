@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using react.api.ViewModels;
 using react.api.Models.LibraryModels;
+using react.api.Repository;
 
 namespace react.api.Map
 {
@@ -20,7 +21,7 @@ namespace react.api.Map
             CreateMap<Book, BookViewModel> ()
                 .ForMember(view => view.GenreId, opt => opt.MapFrom(model => model.Genre != null ? (long?)model.Genre.Id : null));
 
-            CreateMap<Basket, BasketViewModel> ()
+            CreateMap<IBasketRepository, BasketViewModel> ()
                 .ForMember(view => view.Count, opt => opt.MapFrom(model => model.Lines != null ? (long?)model.Lines.Sum(line => line.Count) : null));
 
             CreateMap<Genre, GenreViewModel>();

@@ -7,7 +7,10 @@ namespace react.api.Models.LibraryModels
 {
     public enum LibraryCartLineStatus
     {
+        BookOnBasket,
+
         BookOnHand,
+        
         BookReturned
     }
 }
