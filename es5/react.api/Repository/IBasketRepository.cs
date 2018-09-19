@@ -11,8 +11,9 @@ namespace react.api.Repository
 
         Task AddItem(Book book, int quantity);
 
-        Task RemoveLine(Book book);
-        Task UpdateCount(Book book, int count);
+        Task RemoveLine(long lineId);
+
+        Task UpdateCount(long lineId, int count);
 
         Task Clear();
 

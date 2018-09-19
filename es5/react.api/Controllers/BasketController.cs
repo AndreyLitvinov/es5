@@ -51,5 +51,34 @@ namespace react.api.Controllers
             return mapper
                 .Map<IBasketRepository, BasketViewModel>(basketService);
         }
+
+
+        // GET api/basket/items
+        [HttpGet]
+        [Route("Items")]
+        public ActionResult<List<BasketLineViewModel>> Items()
+        {
+            return mapper
+                .Map<List<LibraryCardLine>, List<BasketLineViewModel>>(basketService.Lines.ToList());
+        }
+
+        // GET api/basket/update/15/14
+        [HttpPost]
+        [Route("Update/:lineId/:count")]
+        public async Task<ActionResult<long>> Update(long lineId, int count)
+        {
+            await basketService.UpdateCount(lineId, count);
+            return lineId;
+        }
+
+
+        // GET api/basket/remove/15
+        [HttpPost]
+        [Route("Remove/:lineId")]
+        public async Task<ActionResult<long>> Remove(long lineId, int count)
+        {
+            await basketService.RemoveLine(lineId);
+            return lineId;
+        }
     }
 }

@@ -1,22 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import listActions from '../store/actions/tmpListsActions';
-import genresActions from '../store/actions/genresActions';
-import persistenListStatuses from '../constants/persistenListStatuses';
+import basketLinesActions from '../store/actions/basketLinesActions';
+import { basketLinesStatuses } from '../constants/basketLinesConstants';
 import { NavLink, withRouter } from 'react-router-dom';
 import Loader from '../components/loader';
 import Pager from '../components/pager';
-import { UserComponent, AdminComponent } from '../components/authorization';
+//import { UserComponent, AdminComponent } from '../components/authorization';
 import basketActions from '../store/actions/basketActions';
 import { basketStatuses } from '../constants/basketConstants';
 
-class IndexPage extends React.Component {
+class BasketPage extends React.Component {
     constructor(props) {
         super(props);
-        const { booksList, addBooksList } = this.props;
-        if(!booksList){
-            addBooksList();
-        }
+        const { getBasketLines } = this.props;
+        getBasketLines();
     }
 
     addBookToBaskeClick(bookId){
@@ -24,27 +21,30 @@ class IndexPage extends React.Component {
         return (e) => { addBookToBasket(bookId); };
     }
 
+    handleChange(line) {
+        return function(e){
+            const { value } = e.target;
+            line.count = value;
+        };
+    }
+
     componentDidMount() {
         const {
-            booksList
-            , genresList
-            , getBooks
-            , getAllGenres
+            basketLines
             , match:{
                 params:{
-                    genreId
-                    , page
+                     page
                     , pagesize
                 }
             }
-        }= this.props;
+        } = this.props;
 
         
-        if (!booksList || booksList.status == persistenListStatuses.NOT) {
+        if (!booksList || booksList.status == basketLinesConstants.NOT) {
             getBooks(`books/${page || 1}/${pagesize || 3}/${genreId || 0}`);
         }
 
-        if (genresList.status == persistenListStatuses.NOT) {
+        if (genresList.status == basketLinesConstants.NOT) {
             getAllGenres();
         }
     }
@@ -53,37 +53,28 @@ class IndexPage extends React.Component {
         // не понятно как запустить инициализацию до первого рендера! addBooksList
         // const { booksList: { status: booksListStatus }, genresList: { status: genresListStatus } } = this.props;
         const {
-               booksList = { items:{}, status: persistenListStatuses.NOT }
-             , getBooks
-             , genresList = { items:{}, status: persistenListStatuses.NOT }
-             , match:{params:{genreId, page, pagesize}}
-             
+               basketList = { items:{}, status: basketLinesConstants.NOT }
+             , match:{params:{ page, pagesize }}
             } = this.props;
 
-        const { status: booksListStatus } = booksList;
-        const { status: genresListStatus } = genresList;
+        const { status: basketListStatus } = basketList;
 
         const { 
-            booksList: { status: nextBooksListStatus }
-            , genresList: { status: nextGenresListStatus }
+            basketList: { status: nextBasketListStatus }
             , match:{
-                params:{genreId: nextGenreId, page: nextPage, pagesize: nextPagesize}
+                params:{ page: nextPage, pagesize: nextPagesize}
             } 
         } = nextProps;
 
         // если изменился статус любого списка
-        if (booksListStatus != nextBooksListStatus
-            || genresListStatus != nextGenresListStatus) {
+        if (basketListStatus != nextBasketListStatus) {
             // если в новом стейте все списке загруженны
-            return nextBooksListStatus == persistenListStatuses.READY
-                && nextGenresListStatus == persistenListStatuses.READY
-                || nextBooksListStatus == persistenListStatuses.PROCESS;
+            return nextBasketListStatus == basketLinesConstants.READY;
         }
 
-        if(nextGenreId != genreId
-        || page != nextPage
+        if(page != nextPage
         || pagesize != nextPagesize){
-            getBooks(`books/${nextPage || 1}/${nextPagesize || 3}/${nextGenreId || 0}`);
+            getBasketList(`basket/${nextPage || 1}/${nextPagesize || 3}`);
         }
         
         return true;
@@ -91,75 +82,50 @@ class IndexPage extends React.Component {
 
     render() {
         const { 
-            booksList = { items:{}, status: persistenListStatuses.NOT }
-            , genresList = { items:{}, status: persistenListStatuses.NOT }
+            basketLines = { lines, status: statusLines }
             ,  match:{
-                params:{genreId, page, pagesize}
+                params:{ page, pagesize}
             }
-            , basket:{ status: basketStatus }
         } = this.props;
         
-        const { items: books = [], status: booksListStatus } = booksList;
-        const { items: genres, status: genresListStatus } = genresList;
-        const isFeching = booksListStatus != persistenListStatuses.READY || genresListStatus != persistenListStatuses.READY; 
+        const currentPageLines = basketLines.slice(page * pagesize, (page + 1) * pagesize);
+
+        const isFeching = statusLines == basketLinesStatuses.GET_BASKET_REQUEST; 
 
         return (
             <div>
             <table class="table table-striped">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col">Название</th>
-                        <th scope="col">Жанр</th>
-                        <th scope="col">Аннотация</th>
-                        <th scope="col">Год</th>
+                        <th scope="col">Книга</th>
                         <UserComponent>
-                            <th scope="col">
-                            </th>
+                            <th scope="col">Кол-во</th>
                         </UserComponent>
-                        <AdminComponent>
-                            <th scope="col">
-                            </th>
-                        </AdminComponent>
                     </tr>
                 </thead>
                 <tbody>
                     {(isFeching ? <tr scope="row"><td colspan="4"><Loader/></td></tr>
-                        : books.length == 0 ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center">Нет данных</div></td></tr>
-                        : books.map((book, index) =>
-                        <tr scope="row" key={book.id}>
+                        : currentPageLines.length == 0 ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center">Нет данных</div></td></tr>
+                        : currentPageLines.map((line, index) =>
+                        <tr scope="row" key={line.id}>
                             <td>
-                                {book.name}
-                            </td>
-                            <td>
-                                {genres.find(genre => genre.id == book.genreId) ? genres.find(genre => genre.id == book.genreId).name : ''}
-                            </td>
-                            <td>
-                                {book.annotation}
-                            </td>
-                            <td>
-                                {book.year}
+                                {line.title}
                             </td>
                             <UserComponent>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" onClick={this.addBookToBaskeClick(book.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-cart-plus"></i></button>
+                                        <input type="number" value={line.count} onChange={} onBlur={this.handlerChangeCount(line.id)}></input>
+                                        <button type="button" onClick={this.addBookToBaskeClick(line.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-plus-square"></i></button>
+                                        <button type="button" onClick={this.addBookToBaskeClick(line.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-plus-square"></i></button>
                                     </div>
                                 </td>
                             </UserComponent>
-                            <AdminComponent>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <NavLink to={`/book/edit/${book.id}`} className="btn btn-outline-success"><i class="fas fa-edit"></i></NavLink>
-                                        <NavLink to={`/book/remove/${book.id}`} className="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></NavLink>
-                                    </div>
-                                </td>
-                            </AdminComponent>
                         </tr>
                         )
                         )}
                 </tbody>
             </table>
-            <Pager page={page || 1} size={pagesize || 3} count={booksList.count} urlTemplate={`/books/{page}/${pagesize || 3}/${genreId || 0}`} />
+            <Pager page={page || 1} size={pagesize || 3} count={basketLines.length} urlTemplate={`/basket/page{page}/pagesize${pagesize || 3}`} />
             </div>
         );
     }
@@ -167,26 +133,21 @@ class IndexPage extends React.Component {
 
 
 const mapStateToProps = (state, ownProps) => {
-    const { tmpLists, genresList, filter, basket } = state;
+    const { basketLines } = state;
     return {
-        booksList: tmpLists.find(list => list.key == 'IndexPage'),
-        genresList,
-        filter,
-        basket
+        basketLines
     };
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
-        // ключем должен быть объект контроллера, как это сделать через weakmap?
-        addBooksList: () => dispatch(listActions.addList("IndexPage")),
-        getBooks: (url) => dispatch(listActions.getByRequest("IndexPage", url)),
-        getAllGenres: () => dispatch(genresActions.getAll()),
-        addBookToBasket:(bookId) => dispatch(basketActions.add(bookId)),
+        getBasketLines: () => dispatch(basketLinesActions.getAll()),
+        updateLine: (lineId, count) => dispatch(basketLinesActions.updateLine(lineId, count)),
+        removeLine: (lineId) => dispatch(basketLinesActions.remove(lineId))
     }
 }
 
 export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(IndexPage))
+)(BasketPage))

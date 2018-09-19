@@ -144,7 +144,7 @@ class IndexPage extends React.Component {
                             <UserComponent>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" onClick={this.addBookToBaskeClick(book.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-cart-plus"></i></button>
+                                        <button type="button" onClick={this.addBookToBaskeClick(book.id)} style={{display:'inline'}} disabled={basketStatus == basketStatuses.ADD_BOOK_TO_BASKET_REQUEST} className="btn btn-outline-success"><i class="fas fa-cart-plus"></i></button>
                                     </div>
                                 </td>
                             </UserComponent>

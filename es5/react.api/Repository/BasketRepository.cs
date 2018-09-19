@@ -18,7 +18,6 @@ namespace react.api.Repository
 
             this.context = context;
             this.userService = userService;
-
         }
 
         public async Task AddItem(Book book, int quantity)
@@ -63,16 +62,16 @@ namespace react.api.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task RemoveLine(Book book){
+        public async Task RemoveLine(long lineId){
             var user = await userService.GetCurrentUserAsync();
             var reader = user.Reader;
             var card =  context.LibraryCards
                                             .Include(cardItem => cardItem.Books)
-                                            .ThenInclude(line => line.Book)
+                                                .ThenInclude(line => line.Book)
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
 
-            var removeLine = card?.Books?.FirstOrDefault(line => line.Book?.Id == book.Id);
+            var removeLine = card?.Books?.FirstOrDefault(line => line.Id == lineId);
 
             context.LibraryCardLines.Remove(removeLine);
             await context.SaveChangesAsync();
@@ -83,25 +82,23 @@ namespace react.api.Repository
             var reader = user.Reader;
             var card =  context.LibraryCards
                                             .Include(cardItem => cardItem.Books)
-                                            .ThenInclude(line => line.Book)
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
             context.LibraryCardLines.RemoveRange(card.Books);
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateCount(Book book, int count)
+        public async Task UpdateCount(long lineId, int count)
         {
             // todo: userService.GetCurrentUser(); можно бы вынести 
             var user = await userService.GetCurrentUserAsync();
             var reader = user.Reader;
             var card =  context.LibraryCards
                                             .Include(cardItem => cardItem.Books)
-                                            .ThenInclude(line => line.Book)
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
             
-            var updateLine = card?.Books?.FirstOrDefault(line => line.Book?.Id == book.Id);
+            var updateLine = card?.Books?.FirstOrDefault(line => line.Id == lineId);
             updateLine.Count = count;
             await context.SaveChangesAsync();        
         }
@@ -111,6 +108,8 @@ namespace react.api.Repository
             var reader = user.Reader;
                                 return context.LibraryCards
                                             .Include(card => card.Books)
+                                                .ThenInclude(bookLine => bookLine.Book)
+                                                .ThenInclude(book => book.Genre)
                                             .Include(card => card.Reader)
                                             .FirstOrDefault(card => card.Reader != null && card.Reader.Id == reader.Id)
                                             ?.Books

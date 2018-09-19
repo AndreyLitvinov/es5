@@ -5,6 +5,7 @@ import tmpLists from './tmpLists';
 import visibilityFilter from './visibilityFilter';
 import authorization from './authorization';
 import basket from './basket';
+import basketLines from './basketLines';
 
 export default combineReducers({
     booksList: books,
@@ -12,5 +13,6 @@ export default combineReducers({
     tmpLists: tmpLists,
     filter: visibilityFilter,
     authorization,
-    basket
+    basket,
+    basketLines
 })

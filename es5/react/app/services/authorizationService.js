@@ -1,5 +1,6 @@
 import apiConstants from '../constants/apiConstants';
 import 'whatwg-fetch';
+import handler from './handlers';
 
 const authorizationService = {
     login,
