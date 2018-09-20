@@ -64,21 +64,21 @@ namespace react.api.Controllers
 
         // GET api/basket/update/15/14
         [HttpPost]
-        [Route("Update/:lineId/:count")]
-        public async Task<ActionResult<long>> Update(long lineId, int count)
+        [Route("Update")]
+        public async Task<ActionResult<long>> Update([FromBody]BasketLineViewModel line)
         {
-            await basketService.UpdateCount(lineId, count);
-            return lineId;
+            await basketService.UpdateCount(line.Id, line.Count);
+            return line.Id;
         }
 
 
         // GET api/basket/remove/15
         [HttpPost]
-        [Route("Remove/:lineId")]
-        public async Task<ActionResult<long>> Remove(long lineId, int count)
+        [Route("Remove")]
+        public async Task<ActionResult<long>> Remove([FromBody]BasketLineViewModel line)
         {
-            await basketService.RemoveLine(lineId);
-            return lineId;
+            await basketService.RemoveLine(line.Id);
+            return line.Id;
         }
     }
 }

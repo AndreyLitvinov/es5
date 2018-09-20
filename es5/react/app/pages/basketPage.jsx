@@ -5,32 +5,21 @@ import { basketLinesStatuses } from '../constants/basketLinesConstants';
 import { NavLink, withRouter } from 'react-router-dom';
 import Loader from '../components/loader';
 import Pager from '../components/pager';
-//import { UserComponent, AdminComponent } from '../components/authorization';
-import basketActions from '../store/actions/basketActions';
-import { basketStatuses } from '../constants/basketConstants';
+import { UserComponent } from '../components/authorization';
+
 
 class BasketPage extends React.Component {
     constructor(props) {
         super(props);
         const { getBasketLines } = this.props;
-        getBasketLines();
-    }
 
-    addBookToBaskeClick(bookId){
-        const { addBookToBasket } = this.props;
-        return (e) => { addBookToBasket(bookId); };
-    }
-
-    handleChange(line) {
-        return function(e){
-            const { value } = e.target;
-            line.count = value;
-        };
+        this.updateLine = this.updateLine.bind(this);
+        this.removeLine = this.removeLine.bind(this);
     }
 
     componentDidMount() {
         const {
-            basketLines
+            getBasketLines
             , match:{
                 params:{
                      page
@@ -39,56 +28,28 @@ class BasketPage extends React.Component {
             }
         } = this.props;
 
-        
-        if (!booksList || booksList.status == basketLinesConstants.NOT) {
-            getBooks(`books/${page || 1}/${pagesize || 3}/${genreId || 0}`);
-        }
-
-        if (genresList.status == basketLinesConstants.NOT) {
-            getAllGenres();
-        }
+        getBasketLines();
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        // не понятно как запустить инициализацию до первого рендера! addBooksList
-        // const { booksList: { status: booksListStatus }, genresList: { status: genresListStatus } } = this.props;
-        const {
-               basketList = { items:{}, status: basketLinesConstants.NOT }
-             , match:{params:{ page, pagesize }}
-            } = this.props;
+    updateLine(line){
+        const { updateLine } = this.props
+        updateLine(line.id, line.count)
+    }
 
-        const { status: basketListStatus } = basketList;
-
-        const { 
-            basketList: { status: nextBasketListStatus }
-            , match:{
-                params:{ page: nextPage, pagesize: nextPagesize}
-            } 
-        } = nextProps;
-
-        // если изменился статус любого списка
-        if (basketListStatus != nextBasketListStatus) {
-            // если в новом стейте все списке загруженны
-            return nextBasketListStatus == basketLinesConstants.READY;
-        }
-
-        if(page != nextPage
-        || pagesize != nextPagesize){
-            getBasketList(`basket/${nextPage || 1}/${nextPagesize || 3}`);
-        }
-        
-        return true;
+    removeLine(line){
+        const { removeLine } = this.props
+        removeLine(line.id)
     }
 
     render() {
         const { 
-            basketLines = { lines, status: statusLines }
+            basketLines:{ lines, status: statusLines }
             ,  match:{
-                params:{ page, pagesize}
+                params:{ page=1, pagesize=3}
             }
         } = this.props;
         
-        const currentPageLines = basketLines.slice(page * pagesize, (page + 1) * pagesize);
+        const currentPageLines = lines.slice((page - 1) * pagesize, page * pagesize);
 
         const isFeching = statusLines == basketLinesStatuses.GET_BASKET_REQUEST; 
 
@@ -100,6 +61,7 @@ class BasketPage extends React.Component {
                         <th scope="col">Книга</th>
                         <UserComponent>
                             <th scope="col">Кол-во</th>
+                            <th scope="col"></th>
                         </UserComponent>
                     </tr>
                 </thead>
@@ -107,26 +69,88 @@ class BasketPage extends React.Component {
                     {(isFeching ? <tr scope="row"><td colspan="4"><Loader/></td></tr>
                         : currentPageLines.length == 0 ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center">Нет данных</div></td></tr>
                         : currentPageLines.map((line, index) =>
-                        <tr scope="row" key={line.id}>
-                            <td>
-                                {line.title}
-                            </td>
-                            <UserComponent>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <input type="number" value={line.count} onChange={} onBlur={this.handlerChangeCount(line.id)}></input>
-                                        <button type="button" onClick={this.addBookToBaskeClick(line.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-plus-square"></i></button>
-                                        <button type="button" onClick={this.addBookToBaskeClick(line.id)} style={{display:'inline'}}  className="btn btn-outline-success"><i class="fas fa-plus-square"></i></button>
-                                    </div>
-                                </td>
-                            </UserComponent>
-                        </tr>
-                        )
+                        <BasketLine  key={line.id} line={line} update={this.updateLine} remove={this.removeLine}/>)
                         )}
                 </tbody>
             </table>
-            <Pager page={page || 1} size={pagesize || 3} count={basketLines.length} urlTemplate={`/basket/page{page}/pagesize${pagesize || 3}`} />
+            <Pager page={page || 1} size={pagesize || 3} count={lines.length} urlTemplate={`/basket/page{page}/pagesize${pagesize || 3}`} />
             </div>
+        );
+    }
+}
+
+
+class BasketLine extends React.Component {
+    constructor(props) {
+        super(props);
+        
+        const { line } = this.props;
+        this.state = {
+            count: line.count,
+            timer: null
+        }
+
+        this.plusBookToBasketClick = this.plusBookToBasketClick.bind(this);
+        this.minusBookFromBasketClick = this.minusBookFromBasketClick.bind(this);
+        this.removeBookFromBasketClick = this.removeBookFromBasketClick.bind(this);
+    }
+
+    startTimerSave(count) {
+        const { update, line } = this.props;
+        const { timer } = this.state;
+
+        if(timer) clearTimeout(timer);
+        if(update)
+            this.setState({ timer : setTimeout(() => update(Object.assign(line, { count })), 3000) });
+    }
+
+    plusBookToBasketClick(){
+        let { count: currentCount } = this.state;
+        this.setState({ count: ++currentCount });
+        this.startTimerSave(currentCount);
+    }
+
+    minusBookFromBasketClick(){
+        let { count: currentCount } = this.state;
+        this.setState({ count: --currentCount });
+        this.startTimerSave(currentCount);
+    }
+
+    removeBookFromBasketClick(){
+        const { remove, line } = this.props;
+        const { count } = this.state;
+        if(remove)
+            remove(Object.assign(line, { count }));
+    }
+
+    contChange(e) {
+        const { value } = e.target;
+        this.setState({ count: value });
+        this.startTimerSave(value);
+    }
+
+    render() {
+        const { line } = this.props;
+        const { count } = this.state;
+        const isUpdating = !!line.updating;
+        return (
+            <tr scope="row">
+                <td>
+                    {line.title}
+                </td>
+                <UserComponent>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <input type="number" value={count} onChange={(e) => this.contChange(e)} className="form-control" disabled={isUpdating}></input>
+                            <button type="button" onClick={this.minusBookFromBasketClick} style={{display:'inline'}}  className="btn btn-outline-success" disabled={isUpdating}><i class="fas fa-minus-square"></i></button>
+                            <button type="button" onClick={this.plusBookToBasketClick} style={{display:'inline'}}  className="btn btn-outline-success" disabled={isUpdating}><i class="fas fa-plus-square"></i></button>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" onClick={this.removeBookFromBasketClick} style={{display:'inline'}} className="btn btn-outline-danger" disabled={isUpdating}><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </UserComponent>
+            </tr>
         );
     }
 }
@@ -142,7 +166,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         getBasketLines: () => dispatch(basketLinesActions.getAll()),
-        updateLine: (lineId, count) => dispatch(basketLinesActions.updateLine(lineId, count)),
+        updateLine: (lineId, count) => dispatch(basketLinesActions.update(lineId, count)),
         removeLine: (lineId) => dispatch(basketLinesActions.remove(lineId))
     }
 }

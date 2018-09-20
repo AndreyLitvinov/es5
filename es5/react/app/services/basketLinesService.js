@@ -32,7 +32,7 @@ function update(lineId, count) {
             'Access-Control-Allow-Origin': '*',
             ...authHeader()
         },
-        body: JSON.stringify({lineId, count})
+        body: JSON.stringify({ Id: lineId, count})
     };
 
     return fetch(apiConstants.URL + 'basket/update', requestOptions)
@@ -41,15 +41,16 @@ function update(lineId, count) {
 
 function remove(lineId) {
     const requestOptions = {
-        method: 'GET',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
             ...authHeader()
         },
+        body: JSON.stringify({ Id: lineId })
     };
 
-    return fetch(apiConstants.URL + 'basket/remove/lineId', requestOptions)
+    return fetch(apiConstants.URL + 'basket/remove', requestOptions)
         .then(handler.response, handler.error);
 }
 
