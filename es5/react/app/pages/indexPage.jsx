@@ -28,8 +28,7 @@ class IndexPage extends React.Component {
 
     componentDidMount() {
         const {
-            booksList
-            , genresList
+            genresList
             , getBooks
             , getAllGenres
             , match:{
@@ -41,10 +40,7 @@ class IndexPage extends React.Component {
             }
         }= this.props;
 
-        
-        if (!booksList || booksList.status == persistenListStatuses.NOT) {
-            getBooks(`books/${page || 1}/${pagesize || 3}/${genreId || 0}`);
-        }
+        getBooks(`books/${page || 1}/${pagesize || 3}/${genreId || 0}`);
 
         if (genresList.status == persistenListStatuses.NOT) {
             getAllGenres();
@@ -59,7 +55,7 @@ class IndexPage extends React.Component {
              , getBooks
              , genresList = { items:{}, status: persistenListStatuses.NOT }
              , match:{params:{genreId, page, pagesize}}
-             
+             , basket:{ status: basketStatus }
             } = this.props;
 
         const { status: booksListStatus } = booksList;
@@ -70,7 +66,8 @@ class IndexPage extends React.Component {
             , genresList: { status: nextGenresListStatus }
             , match:{
                 params:{genreId: nextGenreId, page: nextPage, pagesize: nextPagesize}
-            } 
+            }
+            , basket:{ status: nextBasketStatus } 
         } = nextProps;
 
         // если изменился статус любого списка
@@ -88,7 +85,11 @@ class IndexPage extends React.Component {
             getBooks(`books/${nextPage || 1}/${nextPagesize || 3}/${nextGenreId || 0}`);
         }
         
-        return true;
+        if(nextBasketStatus != basketStatus){
+            return nextBasketStatus == basketStatuses.ADD_BOOK_TO_BASKET_REQUEST || nextBasketStatus == basketStatuses.SUCCESS;
+        }
+
+        return false;
     }
 
     render() {

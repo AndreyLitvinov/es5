@@ -43,7 +43,7 @@ namespace react.api.Repository
                 context.LibraryCards.Add(cardReader);
             }
 
-            var cardLine = cardReader.Books?.FirstOrDefault(cardBook => cardBook.Id == book.Id);
+            var cardLine = cardReader.Books?.FirstOrDefault(cardLineItem => cardLineItem.Book?.Id == book.Id);
             if (cardLine == null)
             {
                 context.LibraryCardLines.Add(new LibraryCardLine

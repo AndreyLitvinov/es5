@@ -6,6 +6,7 @@ import { createStore, applyMiddleware  } from 'redux';
 import rootReducer from './store/reducers';
 import App from './components/app';
 import thunk from 'redux-thunk';
+import ErrorHandler from './components/errorHandler';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -13,7 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     ReactDOM.render(
         <Provider store={store}>
             <Router history={history}>
-                <App/>
+                <ErrorHandler>
+                    <App/>
+                </ErrorHandler>
             </Router>
         </Provider>,
         document.getElementById('app-react')

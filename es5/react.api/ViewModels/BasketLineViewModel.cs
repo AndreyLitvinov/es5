@@ -10,5 +10,7 @@ namespace react.api.ViewModels
         public long Id { get; set; }
         public string Title { get; set; }
         public int Count { get; set; }
+        
+        public int MaxCount { get; set; }
     }
 }

@@ -14,17 +14,17 @@ class Cart extends React.Component {
     constructor(props) {
         super(props);
 
-        const { getBasket, basket } = this.props;
+        const { getBasket } = this.props;
         getBasket();
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-        const { basketLinesStatus: newBasketLinesStatus } = nextProps;
+    componentDidUpdate(prevProps, prevState, snapshot){
+        const { basketLinesStatus: prevBasketLinesStatus } = prevProps;
         const { basketLinesStatus } = this.props;
         const { getBasket} = this.props;
 
-        if(newBasketLinesStatus != basketLinesStatus){
-            if(newBasketLinesStatus == basketLinesStatuses.SUCCESS){
+        if(prevBasketLinesStatus != basketLinesStatus){
+            if(basketLinesStatus == basketLinesStatuses.SUCCESS){
                 getBasket();
             }
         }

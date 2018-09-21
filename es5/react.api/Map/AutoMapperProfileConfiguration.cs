@@ -24,8 +24,9 @@ namespace react.api.Map
             CreateMap<IBasketRepository, BasketViewModel> ()
                 .ForMember(view => view.Count, opt => opt.MapFrom(model => model.Lines != null ? (long?)model.Lines.Sum(line => line.Count) : null));
 
-            CreateMap<LibraryCardLine, BasketLineViewModel> ()
-                .ForMember(view => view.Title, opt => opt.MapFrom(model => model.Book != null ? $"{model.Book.Name}{(model.Book.Genre != null ? $" ({model.Book.Genre.Name})":string.Empty)}" : string.Empty));
+            CreateMap<LibraryCardLine, BasketLineViewModel>()
+                .ForMember(view => view.Title, opt => opt.MapFrom(model => model.Book != null ? $"{model.Book.Name}{(model.Book.Genre != null ? $" ({model.Book.Genre.Name})":string.Empty)}" : string.Empty))
+                .ForMember(view => view.MaxCount, opt => opt.MapFrom(model => model.Book != null ? model.Book.Count : 0));
 
             CreateMap<Genre, GenreViewModel>();
         }

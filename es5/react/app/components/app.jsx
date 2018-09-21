@@ -6,21 +6,8 @@ import Content from './content';
 export default class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { date: new Date() };
     }
-
-    componentDidMount() {
-    }
-
-    componentWillUnmount() {
-    }
-
-    tick() {
-        this.setState({
-            date: new Date()
-        });
-    }
-
+    
     render() {
         return (
             <div>
