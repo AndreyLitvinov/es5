@@ -5,7 +5,8 @@ import basketLinesConstants from '../../constants/basketLinesConstants';
 const basketLinesActions = {
     getAll,
     update,
-    remove
+    remove,
+    order
 };
 
 function getAll() {
@@ -37,7 +38,7 @@ function update(lineId, count) {
     };
 
     function request(lineId) { return { type: basketLinesConstants.UPDATE_COUNT_REQUEST, lineId } }
-    function success(line) { return { type: basketLinesConstants.UPDATE_COUNT_SUCCESS, lineId } }
+    function success(lineId) { return { type: basketLinesConstants.UPDATE_COUNT_SUCCESS, lineId } }
     function failure(error) { return { type: basketLinesConstants.UPDATE_COUNT_FAILURE, lineId, error } }
 }
 
@@ -56,6 +57,22 @@ function remove(lineId) {
     function request(lineId) { return { type: basketLinesConstants.REMOVE_REQUEST, lineId } }
     function success(lineId) { return { type: basketLinesConstants.REMOVE_SUCCESS, lineId } }
     function failure(error) { return { type: basketLinesConstants.REMOVE_FAILURE, lineId, error } }
+}
+
+function order() {
+    return dispatch => {
+        dispatch(request());
+
+        basketLinesService.order()
+            .then(
+                () => dispatch(success()),
+                error => dispatch(failure(error))
+            );
+    };
+
+    function request() { return { type: basketLinesConstants.ORDER_REQUEST } }
+    function success() { return { type: basketLinesConstants.ORDER_SUCCESS } }
+    function failure(error) { return { type: basketLinesConstants.ORDER_FAILURE, error } }
 }
 
 

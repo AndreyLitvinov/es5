@@ -80,5 +80,14 @@ namespace react.api.Controllers
             await basketService.RemoveLine(line.Id);
             return line.Id;
         }
+
+        // GET api/basket/order
+        [HttpGet]
+        [Route("Order")]
+        public async Task<ActionResult<bool>> Order()
+        {
+            await basketService.Order();
+            return true;
+        }
     }
 }

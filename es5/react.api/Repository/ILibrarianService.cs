@@ -6,19 +6,18 @@ using react.api.Models.LibraryModels;
 
 namespace react.api.Repository
 {
-    public interface IBasketRepository
+    public interface ILibrarianService
     {
 
-        Task AddItem(Book book, int quantity);
+        IQueryable GetOrders();
 
         Task RemoveLine(long lineId);
 
         Task UpdateCount(long lineId, int count);
 
-        Task Clear();
+        Task GiveLine(long lineId);
+        
+        Task GiveAllLines(long userId);
 
-        Task Order();
-
-        IEnumerable<LibraryCardLine> Lines{ get; }
     }
 }

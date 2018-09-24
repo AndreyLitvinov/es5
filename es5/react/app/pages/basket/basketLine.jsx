@@ -27,14 +27,12 @@ export default class BasketLine extends React.Component {
 
     plusBookToBasketClick(){
         let { count: currentCount } = this.state;
-        this.setState({ count: ++currentCount });
-        this.startTimerSave(currentCount);
+        this.handlerCountChange(++currentCount);
     }
 
     minusBookFromBasketClick(){
         let { count: currentCount } = this.state;
-        this.setState({ count: --currentCount });
-        this.startTimerSave(currentCount);
+        this.handlerCountChange(--currentCount);
     }
 
     removeBookFromBasketClick(){
@@ -44,10 +42,19 @@ export default class BasketLine extends React.Component {
             remove(Object.assign(line, { count }));
     }
 
+    handlerCountChange(count){
+        const { changed, line } = this.props;
+        this.setState({ count });
+        this.startTimerSave(count);
+
+        if(changed){
+            changed(Object.assign(line, { count }));
+        }
+    }
+
     contChange(e) {
         const { value } = e.target;
-        this.setState({ count: value });
-        this.startTimerSave(value);
+        this.handlerCountChange(value);
     }
 
     render() {
@@ -65,7 +72,6 @@ export default class BasketLine extends React.Component {
                             <input type="number" value={count} onChange={(e) => this.contChange(e)} className="form-control" disabled={isUpdating}></input>
                             <button type="button" onClick={this.minusBookFromBasketClick} style={{display:'inline'}}  className="btn btn-outline-success" disabled={isUpdating || count < 2}><i class="fas fa-minus-square"></i></button>
                             <button type="button" onClick={this.plusBookToBasketClick} style={{display:'inline'}} className="btn btn-outline-success" disabled={isUpdating || count >= line.maxCount}><i class="fas fa-plus-square"></i></button>
-                            
                         </div>
                         <div className="d-flex pt-2">
                             { (count < 1 || count > line.maxCount) && <div class="alert alert-danger">Значение должно быть в диапазоне от 1 до { line.maxCount }, данные не будут сохранены.</div>}

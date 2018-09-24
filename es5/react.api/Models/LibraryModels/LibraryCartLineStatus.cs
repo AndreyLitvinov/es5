@@ -9,6 +9,8 @@ namespace react.api.Models.LibraryModels
     {
         BookOnBasket,
 
+        BookOnOrder,
+
         BookOnHand,
         
         BookReturned

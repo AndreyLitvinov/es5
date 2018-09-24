@@ -6,7 +6,8 @@ import handler from './handlers';
 const basketLinesService = {
     getAll,
     update,
-    remove
+    remove,
+    order
 };
 
 function getAll() {
@@ -51,6 +52,20 @@ function remove(lineId) {
     };
 
     return fetch(apiConstants.URL + 'basket/remove', requestOptions)
+        .then(handler.response, handler.error);
+}
+
+function order() {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            ...authHeader()
+        },
+    };
+
+    return fetch(apiConstants.URL + 'basket/order', requestOptions)
         .then(handler.response, handler.error);
 }
 

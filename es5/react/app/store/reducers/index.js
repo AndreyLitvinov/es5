@@ -6,6 +6,7 @@ import visibilityFilter from './visibilityFilter';
 import authorization from './authorization';
 import basket from './basket';
 import basketLines from './basketLines';
+import reader from './reader';
 
 export default combineReducers({
     booksList: books,
@@ -14,5 +15,6 @@ export default combineReducers({
     filter: visibilityFilter,
     authorization,
     basket,
-    basketLines
+    basketLines,
+    reader
 })

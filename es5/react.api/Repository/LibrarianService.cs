@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,12 +8,12 @@ using react.api.Models.LibraryModels;
 
 namespace react.api.Repository
 {
-    public class BasketRepository: IBasketRepository
+    public class LibrarianService: ILibrarianService
     {
         private readonly AppDbContext context;
         private IUserService userService;
 
-        public BasketRepository(AppDbContext context,
+        public BasketService(AppDbContext context,
         IUserService userService){
 
             this.context = context;
@@ -43,7 +43,7 @@ namespace react.api.Repository
                 context.LibraryCards.Add(cardReader);
             }
 
-            var cardLine = cardReader.Books?.FirstOrDefault(cardLineItem => cardLineItem.Book?.Id == book.Id);
+            var cardLine = cardReader.Books?.FirstOrDefault(cardLineItem => cardLineItem.Book?.Id == book.Id && cardLineItem.Status == LibraryCartLineStatus.BookOnBasket);
             if (cardLine == null)
             {
                 context.LibraryCardLines.Add(new LibraryCardLine
@@ -71,7 +71,7 @@ namespace react.api.Repository
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
 
-            var removeLine = card?.Books?.FirstOrDefault(line => line.Id == lineId);
+            var removeLine = card?.Books?.FirstOrDefault(line => line.Id == lineId && line.Status == LibraryCartLineStatus.BookOnBasket);
 
             context.LibraryCardLines.Remove(removeLine);
             await context.SaveChangesAsync();
@@ -84,7 +84,7 @@ namespace react.api.Repository
                                             .Include(cardItem => cardItem.Books)
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
-            context.LibraryCardLines.RemoveRange(card.Books);
+            context.LibraryCardLines.RemoveRange(card.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnBasket));
             await context.SaveChangesAsync();
         }
 
@@ -98,9 +98,43 @@ namespace react.api.Repository
                                             .Include(cardItem => cardItem.Reader)
                                             .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
             
-            var updateLine = card?.Books?.FirstOrDefault(line => line.Id == lineId);
+            var updateLine = card?.Books?.FirstOrDefault(line => line.Id == lineId && line.Status == LibraryCartLineStatus.BookOnBasket);
             updateLine.Count = count;
             await context.SaveChangesAsync();        
+        }
+
+        public Task Order()
+        {
+            var user = userService.GetCurrentUser();
+            var reader = user.Reader;
+
+            foreach(var line in context.LibraryCards
+                                            .Include(card => card.Books)
+                                                .ThenInclude(bookLine => bookLine.Book)
+                                                .ThenInclude(book => book.Genre)
+                                            .Include(card => card.Reader)
+                                            .FirstOrDefault(card => card.Reader != null && card.Reader.Id == reader.Id)
+                                            ?.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnBasket))
+            {
+                line.Status = LibraryCartLineStatus.BookOnOrder;
+            }
+
+            return context.SaveChangesAsync();
+        }
+
+        public IQueryable GetOrders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GiveLine(long lineId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GiveAllLines(long userId)
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<LibraryCardLine> Lines { get {
@@ -113,6 +147,7 @@ namespace react.api.Repository
                                             .Include(card => card.Reader)
                                             .FirstOrDefault(card => card.Reader != null && card.Reader.Id == reader.Id)
                                             ?.Books
+                                            .Where(line => line.Status == LibraryCartLineStatus.BookOnBasket)
                                             .ToList();
             }
         }

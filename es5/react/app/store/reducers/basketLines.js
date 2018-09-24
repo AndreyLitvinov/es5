@@ -51,6 +51,25 @@ const basketLines = (state = { status: basketLinesStatuses.BASKET_EMPTY, updatin
                 status: basketLinesStatuses.SUCCESS,
                 lines: state.lines
             }            
+
+
+        // order
+        case basketLinesConstants.ORDER_REQUEST:
+        return {
+            status: basketLinesStatuses.ORDER_BOOKS_REQUEST,
+            lines: []
+        }
+        case basketLinesConstants.ORDER_SUCCESS:
+            return {
+                status: basketLinesStatuses.SUCCESS,
+                lines: state.lines
+            }
+        case basketLinesConstants.ORDER_FAILURE:
+            return {
+                status: basketLinesStatuses.SUCCESS,
+                lines: state.lines,
+                error: action.error
+            }            
         default:
             return state
     }

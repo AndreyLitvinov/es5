@@ -29,6 +29,9 @@ namespace react.api.Map
                 .ForMember(view => view.MaxCount, opt => opt.MapFrom(model => model.Book != null ? model.Book.Count : 0));
 
             CreateMap<Genre, GenreViewModel>();
+
+            CreateMap<Reader, ReaderViewModel>();
+            CreateMap<ReaderViewModel, Reader>();
         }
     }
 }
