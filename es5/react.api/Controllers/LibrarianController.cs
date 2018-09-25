@@ -30,10 +30,37 @@ namespace react.api.Controllers
         // GET api/librarian/orders
         [HttpGet]
         [Route("Orders/{page}/{pagesize}")]
-        public ActionResult<BasketViewModel> Orders(int page, int pagesize)
+        public ActionResult<ListViewModel> Orders(int page, int pagesize)
         {
-            return mapper
-                .Map<IBasketService, BasketViewModel>(librarianService.GetOrders());
+            var result =
+                librarianService
+                .GetOrders()
+                .Include(reader => reader.User)
+                .Select(reader => mapper.Map<Reader, OrderViewModel>(reader))
+                .ToList();
+
+            var pageResult = result
+                .Skip((page - 1) * pagesize)
+                .Take(pagesize)
+                .ToList();
+
+
+            return new ListViewModel
+            {
+                Items = pageResult,
+                Count = result.Count
+            };
+        }
+
+        // GET api/librarian/order/15
+        [HttpGet]
+        [Route("Order/{userId}")]
+        public async Task<ActionResult<List<BasketLineViewModel>>> Order(long userId)
+        {
+            var result = await librarianService
+                .GetOrder(userId);
+
+            return mapper.Map<List<LibraryCardLine>, List<BasketLineViewModel>>(result);
         }
 
         // POST api/librarian/update/
@@ -41,7 +68,7 @@ namespace react.api.Controllers
         [Route("Update")]
         public async Task<ActionResult<long>> Update([FromBody]BasketLineViewModel line)
         {
-            await basketService.UpdateCount(line.Id, line.Count);
+            await librarianService.UpdateCount(line.Id, line.Count);
             return line.Id;
         }
 
@@ -50,26 +77,26 @@ namespace react.api.Controllers
         [Route("Remove")]
         public async Task<ActionResult<long>> Remove([FromBody]BasketLineViewModel line)
         {
-            await basketService.RemoveLine(line.Id);
+            await librarianService.RemoveLine(line.Id);
             return line.Id;
         }
 
         // POST api/librarian/GiveLine
         [HttpPost]
         [Route("GiveLine")]
-        public async Task<ActionResult<bool>> GiveLine(long userId)
+        public async Task<ActionResult<long>> GiveLine(long lineId)
         {
-            await basketService.Order();
-            return true;
+            await librarianService.GiveLine(lineId);
+            return lineId;
         }
 
         // POST api/librarian/GiveAllLines
         [HttpPost]
         [Route("GiveAllLines")]
-        public async Task<ActionResult<bool>> GiveAllLines()
+        public async Task<ActionResult<long>> GiveAllLines(long userId)
         {
-            await basketService.Order();
-            return true;
+            await librarianService.GiveAllLines(userId);
+            return userId;
         }
     }
 }

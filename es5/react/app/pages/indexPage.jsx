@@ -17,8 +17,6 @@ class IndexPage extends React.Component {
         if(!booksList){
             addBooksList();
         }
-
-
     }
 
     addBookToBaskeClick(bookId){

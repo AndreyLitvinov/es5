@@ -2,7 +2,7 @@ import AuthorizationRoute from './authorizationRoute';
 import AuthorizationComponent from './authorizationComponent';
 
 // права на переходы
-const UserRoute = AuthorizationRoute(['User', 'Librarian', 'admin']);
+const UserRoute = AuthorizationRoute(['User', 'Librarian', 'Admin']);
 const LibrarianRoute = AuthorizationRoute(['Librarian', 'Admin']);
 const AdminRoute = AuthorizationRoute(['Admin']);
 

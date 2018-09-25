@@ -21,7 +21,7 @@ namespace react.api.Map
             CreateMap<Book, BookViewModel> ()
                 .ForMember(view => view.GenreId, opt => opt.MapFrom(model => model.Genre != null ? (long?)model.Genre.Id : null));
 
-            CreateMap<IBasketRepository, BasketViewModel> ()
+            CreateMap<IBasketService, BasketViewModel> ()
                 .ForMember(view => view.Count, opt => opt.MapFrom(model => model.Lines != null ? (long?)model.Lines.Sum(line => line.Count) : null));
 
             CreateMap<LibraryCardLine, BasketLineViewModel>()
@@ -32,6 +32,10 @@ namespace react.api.Map
 
             CreateMap<Reader, ReaderViewModel>();
             CreateMap<ReaderViewModel, Reader>();
+
+            CreateMap<Reader, OrderViewModel>()
+                .ForMember(view => view.Title, opt => opt.MapFrom(model => $"{model.FirstName} {model.LastName}" ))
+                .ForMember(view => view.UserId, opt => opt.MapFrom(model => model.User != null ? model.User.Id : 0 ));
         }
     }
 }

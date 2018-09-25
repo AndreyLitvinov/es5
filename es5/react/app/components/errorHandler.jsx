@@ -15,7 +15,7 @@ export default class ErrorHandler extends React.Component {
         if (hasError) {
             return (
             <div style={ { textAlign: "center" } }>
-                <h1>Произошла не известная ошибка, обновите страницу!</h1>
+                <h1>Произошла неизвестная ошибка, обновите страницу!</h1>
                 <div id="accordion">
                     <div className="card">
                         <div className="card-header">

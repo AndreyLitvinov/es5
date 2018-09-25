@@ -148,5 +148,12 @@ namespace react.api.Repository
             return true;
         }
 
+        public Task<AppUser> GetUserAsync(long userId)
+        {
+            return context.Users
+                .Include(user => user.Reader)
+                //.ThenInclude(reader => reader)
+                .FirstOrDefaultAsync(user => user.Id == userId);
+        }
     }
 }

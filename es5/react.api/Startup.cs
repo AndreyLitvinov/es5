@@ -55,7 +55,8 @@ namespace react.api
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleRepository, RoleRepository>();
-            services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddTransient<ILibrarianService, LibrarianService>();
+            services.AddScoped<IBasketService, BasketService>();
 
             services.AddLogging(configure =>
             {

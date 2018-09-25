@@ -9,7 +9,9 @@ namespace react.api.Repository
     public interface ILibrarianService
     {
 
-        IQueryable GetOrders();
+        IQueryable<Reader> GetOrders();
+
+        Task<List<LibraryCardLine>> GetOrder(long userId);
 
         Task RemoveLine(long lineId);
 

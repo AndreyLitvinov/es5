@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import basketLinesActions from '../../store/actions/basketLinesActions';
-import { basketLinesStatuses } from '../../constants/basketLinesConstants';
-import {  withRouter } from 'react-router-dom';
+import orderActions from '../../store/actions/orderActions';
+import { orderStatuses } from '../../constants/orderConstants';
+import { withRouter } from 'react-router-dom';
 import Loader from '../../components/loader';
 import Pager from '../../components/pager';
 import { UserComponent } from '../../components/authorization';
-import BasketLine from './basketLine';
+import OrderLine from './orderLine';
 
-class BasketPage extends React.Component {
+class OrderPage extends React.Component {
     constructor(props) {
         super(props);
         
@@ -25,26 +25,25 @@ class BasketPage extends React.Component {
 
     componentDidMount() {
         const {
-            getBasketLines
+            getOrderLines
             , match:{
                 params:{
-                     page
-                    , pagesize
+                    userId
                 }
             }
         } = this.props;
 
-        getBasketLines();
+        getOrderLines(userId);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot){
 
-        const { basketLines:{ status: prevStatusLines } } = prevProps;
-        const { basketLines:{ status: statusLines } } = this.props;
+        const { order:{ status: prevStatusLines } } = prevProps;
+        const { order:{ status: statusLines } } = this.props;
 
         if(prevStatusLines != statusLines){
-            if(prevStatusLines == basketLinesStatuses.ORDER_BOOKS_REQUEST
-                && statusLines == basketLinesStatuses.SUCCESS){
+            if(prevStatusLines == orderStatuses.ORDER_BOOKS_REQUEST
+                && statusLines == orderStatuses.SUCCESS){
                 this.setState({ orderSuccess: true });
             }
         }
@@ -76,9 +75,9 @@ class BasketPage extends React.Component {
 
     render() {
         const { 
-            basketLines:{ lines, status: statusLines }
+            order:{ lines, status: statusLines }
             ,  match:{
-                params:{ page=1, pagesize=3, userId}
+                params:{ page=1, pagesize=3}
             }
         } = this.props;
         
@@ -86,7 +85,7 @@ class BasketPage extends React.Component {
 
         const currentPageLines = lines.slice((page - 1) * pagesize, page * pagesize);
 
-        const isFeching = statusLines == basketLinesStatuses.GET_BASKET_REQUEST; 
+        const isFeching = statusLines == orderStatuses.GET_ORDER_REQUEST; 
 
         return (
             <div>
@@ -105,36 +104,33 @@ class BasketPage extends React.Component {
                         {(isFeching ? <tr scope="row"><td colspan="4"><Loader/></td></tr>
                             : currentPageLines.length == 0 ? <tr scope="row"><td colspan="4"><div class="row justify-content-md-center">Нет данных</div></td></tr>
                             : currentPageLines.map((line, index) =>
-                            <BasketLine  key={line.id} line={line} update={this.updateLine} remove={this.removeLine} changed={this.lineChanged}/>)
+                            <OrderLine  key={line.id} line={line} update={this.updateLine} remove={this.removeLine} changed={this.lineChanged}/>)
                             )}
                     </tbody>
                 </table>
-                <Pager page={page || 1} size={pagesize || 3} count={lines.length} urlTemplate={`/order/userid${userId}/page{page}/pagesize${pagesize || 3}`} />
-                <div>
-                    <button type="button" onClick={this.orderBooks} style={{display:'inline'}} className="btn btn-outline-success" disabled={lineChangedId != 0 || lines.length == 0}>Получить книги</button>
-                </div>
+                <Pager page={page || 1} size={pagesize || 3} count={lines.length} urlTemplate={`/order/page{page}/pagesize${pagesize || 3}`} />
             </div>
         );
     }
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const { basketLines } = state;
+    const { order } = state;
     return {
-        basketLines
+        order
     };
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
-        getBasketLines: () => dispatch(basketLinesActions.getAll()),
-        updateLine: (lineId, count) => dispatch(basketLinesActions.update(lineId, count)),
-        removeLine: (lineId) => dispatch(basketLinesActions.remove(lineId)),
-        order: () => dispatch(basketLinesActions.order())
+        getOrderLines: (userId) => dispatch(orderActions.getAll(userId)),
+        updateLine: (lineId, count) => dispatch(orderActions.update(lineId, count)),
+        removeLine: (lineId) => dispatch(orderActions.remove(lineId)),
+        
     }
 }
 
 export default withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(BasketPage))
+)(OrderPage))

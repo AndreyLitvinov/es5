@@ -13,143 +13,103 @@ namespace react.api.Repository
         private readonly AppDbContext context;
         private IUserService userService;
 
-        public BasketService(AppDbContext context,
+        public LibrarianService(AppDbContext context,
         IUserService userService){
 
             this.context = context;
             this.userService = userService;
         }
 
-        public async Task AddItem(Book book, int quantity)
-        {
-            // получить читателя, если нет создать, создать для него карточку если нет и в карточку добавить запись
-            var user = await userService.GetCurrentUserAsync();
-            var reader = user.Reader;
-            
-            if(user.Reader == null)
-            {
-                reader = new Reader{User = user};
-                context.Readers.Add(reader);
-                
-            }
-
-            var cardReader = await context.LibraryCards
-                                            .Include(card => card.Books)
-                                            .Include(card => card.Reader)
-                                            .FirstOrDefaultAsync(card => card.Reader != null && card.Reader.Id == reader.Id);
-
-            if(cardReader == null) {
-                cardReader = new LibraryCard{Reader = reader};
-                context.LibraryCards.Add(cardReader);
-            }
-
-            var cardLine = cardReader.Books?.FirstOrDefault(cardLineItem => cardLineItem.Book?.Id == book.Id && cardLineItem.Status == LibraryCartLineStatus.BookOnBasket);
-            if (cardLine == null)
-            {
-                context.LibraryCardLines.Add(new LibraryCardLine
-                {
-                    Book = book,
-                    Card = cardReader,
-                    Count = quantity,
-                    Status = LibraryCartLineStatus.BookOnBasket
-                });
-            }
-            else
-            {
-                cardLine.Count += quantity;
-            }
-
-            await context.SaveChangesAsync();
-        }
-
         public async Task RemoveLine(long lineId){
-            var user = await userService.GetCurrentUserAsync();
-            var reader = user.Reader;
-            var card =  context.LibraryCards
-                                            .Include(cardItem => cardItem.Books)
-                                                .ThenInclude(line => line.Book)
-                                            .Include(cardItem => cardItem.Reader)
-                                            .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
-
-            var removeLine = card?.Books?.FirstOrDefault(line => line.Id == lineId && line.Status == LibraryCartLineStatus.BookOnBasket);
-
-            context.LibraryCardLines.Remove(removeLine);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Clear(){
-            var user = await userService.GetCurrentUserAsync();
-            var reader = user.Reader;
-            var card =  context.LibraryCards
-                                            .Include(cardItem => cardItem.Books)
-                                            .Include(cardItem => cardItem.Reader)
-                                            .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
-            context.LibraryCardLines.RemoveRange(card.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnBasket));
-            await context.SaveChangesAsync();
+            
+           var removeLine =  context.LibraryCardLines
+                                            .Include(lineItem => lineItem.Book)
+                                            
+                                            .FirstOrDefault(lineItem => lineItem.Id == lineId && lineItem.Status == LibraryCartLineStatus.BookOnOrder);            
+            if(removeLine != null){
+                context.LibraryCardLines.Remove(removeLine);
+                await context.SaveChangesAsync();        
+            }else{
+                throw new ArgumentException($"Не найдена строка заказа с идентификатором - ${lineId}");
+            }
         }
 
         public async Task UpdateCount(long lineId, int count)
         {
-            // todo: userService.GetCurrentUser(); можно бы вынести 
-            var user = await userService.GetCurrentUserAsync();
-            var reader = user.Reader;
-            var card =  context.LibraryCards
-                                            .Include(cardItem => cardItem.Books)
-                                            .Include(cardItem => cardItem.Reader)
-                                            .FirstOrDefault(cardItem => cardItem.Reader != null && cardItem.Reader.Id == reader.Id);
+            var updateLine =  context.LibraryCardLines
+                                            .Include(lineItem => lineItem.Book)
+                                            
+                                            .FirstOrDefault(lineItem => lineItem.Id == lineId && lineItem.Status == LibraryCartLineStatus.BookOnOrder);            
+            if(updateLine != null){
+                updateLine.Count = count;
+                await context.SaveChangesAsync();        
+            }else{
+                throw new ArgumentException($"Не найдена строка заказа с идентификатором - ${lineId}");
+            }
+        }
+
+        public IQueryable<Reader> GetOrders()
+        {
+            return context
+            .LibraryCards
+
+            .Include(card => card.Books)
+            .Include(card => card.Reader)
             
-            var updateLine = card?.Books?.FirstOrDefault(line => line.Id == lineId && line.Status == LibraryCartLineStatus.BookOnBasket);
-            updateLine.Count = count;
-            await context.SaveChangesAsync();        
+            .Where(card => card.Books
+                            .Any(bookLine => bookLine.Status == LibraryCartLineStatus.BookOnOrder))
+            .Select(card => card.Reader);
         }
 
-        public Task Order()
+        public async Task GiveLine(long lineId)
         {
-            var user = userService.GetCurrentUser();
-            var reader = user.Reader;
-
-            foreach(var line in context.LibraryCards
-                                            .Include(card => card.Books)
-                                                .ThenInclude(bookLine => bookLine.Book)
-                                                .ThenInclude(book => book.Genre)
-                                            .Include(card => card.Reader)
-                                            .FirstOrDefault(card => card.Reader != null && card.Reader.Id == reader.Id)
-                                            ?.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnBasket))
+            var lineForUpdate = await context.LibraryCardLines.FirstOrDefaultAsync(line => line.Id == lineId);
+            if(lineForUpdate != null && lineForUpdate.Status == LibraryCartLineStatus.BookOnOrder)
             {
-                line.Status = LibraryCartLineStatus.BookOnOrder;
+                lineForUpdate.Status = LibraryCartLineStatus.BookOnHand;
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException($"Не найдена строка корзины с идентификатором - ${lineId}");
+            }
+        }
+
+        public async Task GiveAllLines(long userId)
+        {
+            var user = await userService.GetUserAsync(userId);
+
+            var reader = await context.Readers
+                .Include(readerItem => readerItem.User)
+                .Include(readerItem => readerItem.Cards)
+                    .ThenInclude(cardItem => cardItem.Books)
+                .FirstOrDefaultAsync(readerItem => readerItem.User != null && readerItem.User.Id == userId);
+
+            foreach(var line in reader
+                                    .Cards
+                                    .SelectMany(card => card.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnOrder)))
+            {
+                line.Status = LibraryCartLineStatus.BookOnHand;
             }
 
-            return context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
-        public IQueryable GetOrders()
+        public async Task<List<LibraryCardLine>> GetOrder(long userId)
         {
-            throw new NotImplementedException();
-        }
+            var user = await userService.GetUserAsync(userId);
 
-        public Task GiveLine(long lineId)
-        {
-            throw new NotImplementedException();
-        }
+            var reader = await context.Readers
+                .Include(readerItem => readerItem.User)
+                .Include(readerItem => readerItem.Cards)
+                    .ThenInclude(cardItem => cardItem.Books)
+                    .ThenInclude(lineItem => lineItem.Book)
+                .FirstOrDefaultAsync(readerItem => readerItem.User != null && readerItem.User.Id == userId);
 
-        public Task GiveAllLines(long userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<LibraryCardLine> Lines { get {
-            var user = userService.GetCurrentUser();
-            var reader = user.Reader;
-                                return context.LibraryCards
-                                            .Include(card => card.Books)
-                                                .ThenInclude(bookLine => bookLine.Book)
-                                                .ThenInclude(book => book.Genre)
-                                            .Include(card => card.Reader)
-                                            .FirstOrDefault(card => card.Reader != null && card.Reader.Id == reader.Id)
-                                            ?.Books
-                                            .Where(line => line.Status == LibraryCartLineStatus.BookOnBasket)
-                                            .ToList();
-            }
+                return reader
+                    .Cards
+                    .SelectMany(card => card.Books.Where(line => line.Status == LibraryCartLineStatus.BookOnOrder))
+                    .ToList();
         }
     }
 }

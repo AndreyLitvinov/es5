@@ -17,5 +17,8 @@ namespace react.api.Models.LibraryModels
         
         [BindNever]
         public AppUser User { get; set; }
+
+        [BindNever]
+        public ICollection<LibraryCard> Cards { get; set; }
     }
 }

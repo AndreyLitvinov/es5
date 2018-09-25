@@ -20,9 +20,9 @@ namespace react.api.Controllers
     {
         private IRepository<Book> repoBook;
         private IMapper mapper;
-        private IBasketRepository basketService;
+        private IBasketService basketService;
 
-        public BasketController(IRepository<Book> repos, IBasketRepository basketService, IMapper mapper)
+        public BasketController(IRepository<Book> repos, IBasketService basketService, IMapper mapper)
         {
             repoBook = repos;
             this.mapper = mapper;
@@ -34,7 +34,7 @@ namespace react.api.Controllers
         public ActionResult<BasketViewModel> Get()
         {
             return mapper
-                .Map<IBasketRepository, BasketViewModel>(basketService);
+                .Map<IBasketService, BasketViewModel>(basketService);
         }
 
         // GET api/basket/addbooktocard/
@@ -49,7 +49,7 @@ namespace react.api.Controllers
             }
 
             return mapper
-                .Map<IBasketRepository, BasketViewModel>(basketService);
+                .Map<IBasketService, BasketViewModel>(basketService);
         }
 
 

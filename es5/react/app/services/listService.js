@@ -17,6 +17,7 @@ function getByRequest(requestUrl) {
             ...authHeader(),
             
         },
+        credentials: "include" 
     };
 
     return fetch(apiConstants.URL + requestUrl, requestOptions)

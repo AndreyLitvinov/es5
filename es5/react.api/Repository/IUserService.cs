@@ -18,6 +18,8 @@ namespace react.api.Repository{
         
         AppUser GetCurrentUser();
         Task<AppUser> GetCurrentUserAsync();
+        
+        Task<AppUser> GetUserAsync(long userId);
 
         long CurrentUserId { get; }
     }

@@ -18,7 +18,7 @@ export default class GanreMenu extends React.Component {
                         <Link to="/basket" className="nav-link">Корзина</Link>
                         <Link to="/reader" className="nav-link">Моя карточка читателя</Link>
                         <LibrarianComponent>
-                            <Link to="/delivery" className="nav-link">Книги на выдачу</Link>
+                            <Link to="/orders" className="nav-link">Книги на выдачу</Link>
                         </LibrarianComponent>
                     </li>
                 </ul>

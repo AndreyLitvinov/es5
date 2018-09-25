@@ -6,7 +6,7 @@ using react.api.Models.LibraryModels;
 
 namespace react.api.Repository
 {
-    public interface IBasketRepository
+    public interface IBasketService
     {
 
         Task AddItem(Book book, int quantity);

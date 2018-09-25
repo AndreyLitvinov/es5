@@ -7,6 +7,7 @@ import authorization from './authorization';
 import basket from './basket';
 import basketLines from './basketLines';
 import reader from './reader';
+import order from './order';
 
 export default combineReducers({
     booksList: books,
@@ -16,5 +17,6 @@ export default combineReducers({
     authorization,
     basket,
     basketLines,
-    reader
+    reader,
+    order
 })
